@@ -1,4 +1,5 @@
 ---
+excerpt: Land Use and Land Cover Change
 ---
 
 
@@ -506,8 +507,8 @@ plot(r_lc_date2) # View NLCD 2006, we will need to add the legend use the approp
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-1.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ### Let's add legend and examine existing land cover categories
 
@@ -572,8 +573,8 @@ barplot(c(1,1),
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-2.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ### Let's generate a color for all the land cover categories by using lapply and function
 n_cat <- nrow(lc_legend_df)
@@ -599,8 +600,8 @@ levelplot(r_lc_date2,
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-3.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ################################################
 ###  PART II : Analyze change and transitions
@@ -679,8 +680,8 @@ plot(r_date1_rec)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-4.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 rec_xtab_df <- crosstab(r_date1_rec,r_date2_rec,long=T)
 names(rec_xtab_df) <- c("2001","2011","freq")
@@ -917,8 +918,8 @@ barplot(lc_df$diff,names.arg=lc_df$name,las=2)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-5.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 total_val  <- sum(lc_df$date1)
 lc_df$perc_change <- 100*lc_df$diff/total_val 
@@ -927,8 +928,8 @@ barplot(lc_df$perc_change,names.arg=lc_df$name,las=2)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-6.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ### Create a change image to map all pixels that transitioned to the developed category:  
 
@@ -941,8 +942,8 @@ plot(r_change,main="Land transitions to developed over 2001-2011")
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-7.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 change_tb <- freq(r_change) #Find out how many pixels transitions to developped
 
@@ -965,8 +966,8 @@ plot(r_cat2)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-8.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 cat_bool_fname <- "developped_2001.tif" #input for the distance to road computation
 writeRaster(r_cat2,filename = cat_bool_fname,overwrite=T)
@@ -978,8 +979,8 @@ plot(r_roads,colNA="black")
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-9.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 res(r_roads)
 ~~~
@@ -1000,8 +1001,8 @@ plot(r_roads_90m)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-10.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 r_roads_bool <- r_roads_90m > 0
 plot(r_roads_bool)
@@ -1009,8 +1010,8 @@ plot(r_roads_bool)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-11.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 roads_bool_fname <- "roads_bool.tif" #input for the distance to road computation
 writeRaster(r_roads_bool,filename = roads_bool_fname,overwrite=T)
@@ -1061,16 +1062,16 @@ plot(r_developped_distance) #This is at 90m.
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-12.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 plot(r_roads_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-13.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 #Now rescale the distance...
 min_val <- cellStats(r_roads_distance,min) 
@@ -1111,8 +1112,8 @@ plot(r_date1_rec_masked)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-14.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 #####################################
 ############# PART IV: Run Model and perform assessment ##############
@@ -1127,8 +1128,8 @@ plot(r_mask)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-15.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 NAvalue(r_mask) <- 0 
 
@@ -1142,8 +1143,8 @@ plot(r_mask)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-16.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ### Check the number of NA and pixels in the study area:
 tb_study_area <- freq(r_mask)
@@ -1171,8 +1172,8 @@ plot(r_variables)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-17.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ### Check for consistency in mask:
 NA_freq_tb <- freq(r_variables,value=NA,merge=T)
@@ -1187,8 +1188,8 @@ plot(r_valid_pixels)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-18.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 dim(r_NA)
 ~~~
@@ -1327,16 +1328,16 @@ plot(r_p)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-19.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 histogram(r_p)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-20.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 ###############
 ###### Step 3: Model assessment with ROC
@@ -1351,24 +1352,24 @@ plot(r_change_harris) # boolean reference variable
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-21.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 plot(r_mask) # mask for relevant observation
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-22.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 plot(r_p) # index variable to assess
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-23.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 roc_rast <- ROC(index=r_p, 
                   boolean=r_change_harris, 
@@ -1380,8 +1381,8 @@ plot(roc_rast)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-24.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 slot(roc_rast,"AUC") #this is the AUC from ROC for the logistic modeling
 ~~~
@@ -1403,8 +1404,8 @@ plot(toc_rast)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-25.png)
-{:.captioned}
 
+{:.captioned}
 ~~~r
 slot(toc_rast,"AUC") #this is the AUC from TOC for the logistic modeling
 ~~~
@@ -1418,3 +1419,5 @@ slot(toc_rast,"AUC") #this is the AUC from TOC for the logistic modeling
 ~~~r
 ###############################  End of script  #####################################
 ~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
