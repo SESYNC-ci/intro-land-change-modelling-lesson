@@ -35,7 +35,7 @@ library(sphet) #contains spreg, spatial regression modeling
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
-library(gdata) #read xls, dbf etc., not recently updated but useful
+#library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
 #library(gstat) #spatial interpolation and kriging methods
@@ -64,8 +64,8 @@ create_dir_fun <- function(outDir,out_suffix=NULL){
 #####  Parameters and argument set up ###########
 
 #Separate inputs and outputs directories
-in_dir_var <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2018_workshop/Exercise_4/data/"
-out_dir <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2018_workshop/Exercise_4/outputs"
+in_dir_var <- "data"
+out_dir <- "."
 
 ### General parameters
 

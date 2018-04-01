@@ -1,5 +1,7 @@
 ---
 excerpt: Land Use and Land Cover Change
+editor_options: 
+  chunk_output_type: console
 ---
 
 
@@ -31,10 +33,10 @@ library(rgdal) #GDAL/OGR binding for R with functionalities
 ~~~
 rgdal: version: 1.2-18, (SVN revision 718)
  Geospatial Data Abstraction Library extensions to R successfully loaded
- Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+ Loaded GDAL runtime: GDAL 2.1.2, released 2016/10/24
  Path to GDAL shared files: /usr/share/gdal/2.1
  GDAL binary built with GEOS: TRUE 
- Loaded PROJ.4 runtime: Rel. 4.9.2, 08 September 2015, [PJ_VERSION: 492]
+ Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
  Path to PROJ.4 shared files: (autodetected)
  Linking to sp version: 1.2-7 
 ~~~
@@ -152,7 +154,7 @@ library(rgeos) #contains topological operations
 ~~~
 rgeos version: 0.3-26, (SVN revision 560)
  GEOS runtime version: 3.5.1-CAPI-1.9.1 r4246 
- Linking to sp version: 1.2-5 
+ Linking to sp version: 1.2-7 
  Polygon checking: TRUE 
 ~~~
 {:.output}
@@ -179,67 +181,7 @@ The following object is masked from 'package:raster':
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
-library(gdata) #read xls, dbf etc., not recently updated but useful
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-gdata: read.xls support for 'XLS' (Excel 97-2004) files ENABLED.
-~~~
-{:.output}
-
-~~~
-
-~~~
-{:.output}
-
-~~~
-gdata: read.xls support for 'XLSX' (Excel 2007+) files ENABLED.
-~~~
-{:.output}
-
-~~~
-
-Attaching package: 'gdata'
-~~~
-{:.output}
-
-~~~
-The following objects are masked from 'package:xts':
-
-    first, last
-~~~
-{:.output}
-
-~~~
-The following objects are masked from 'package:raster':
-
-    resample, trim
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:stats':
-
-    nobs
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:utils':
-
-    object.size
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:base':
-
-    startsWith
-~~~
-{:.output}
-
-~~~r
+#library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
 ~~~
@@ -284,7 +226,7 @@ library(sf) #spatial objects and functionalities
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ~~~
-Linking to GEOS 3.5.1, GDAL 2.1.3, proj.4 4.9.2
+Linking to GEOS 3.5.1, GDAL 2.1.2, proj.4 4.9.3
 ~~~
 {:.output}
 
@@ -432,7 +374,7 @@ create_dir_fun <- function(outDir,out_suffix=NULL){
 #####  Parameters and argument set up ###########
 
 #Separate inputs and outputs directories
-in_dir_var <- "data/"
+in_dir_var <- "data"
 out_dir <- "."
 
 ### General parameters
@@ -618,14 +560,14 @@ head(lc_system_nlcd_df) #inspect data
 
 ~~~
 # A tibble: 6 x 5
-  id_l1 id_l2 name_l1   name_l2                     `Classification Descr~
+  id_l1 id_l2 name_l1   name_l2                     `Classification Descr…
   <dbl> <dbl> <chr>     <chr>                       <chr>                 
-1    1.   11. Water     Open Water                  Open Water- areas of ~
-2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a~
-3    2.   21. Developed Developped, Open Space      Developed, Open Space~
-4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens~
-5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int~
-6    2.   24. Developed Developed High Intensity    Developed High Intens~
+1    1.   11. Water     Open Water                  Open Water- areas of …
+2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a…
+3    2.   21. Developed Developped, Open Space      Developed, Open Space…
+4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens…
+5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int…
+6    2.   24. Developed Developed High Intensity    Developed High Intens…
 ~~~
 {:.output}
 
