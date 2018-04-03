@@ -27,33 +27,335 @@ editor_options:
 
 library(sp) # spatial/geographfic objects and functions
 library(rgdal) #GDAL/OGR binding for R with functionalities
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+rgdal: version: 1.2-18, (SVN revision 718)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.1.2, released 2016/10/24
+ Path to GDAL shared files: /usr/share/gdal/2.1
+ GDAL binary built with GEOS: TRUE 
+ Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
+ Path to PROJ.4 shared files: (autodetected)
+ Linking to sp version: 1.2-7 
+~~~
+{:.output}
+
+~~~r
 library(spdep) #spatial analyses operations, functions etc.
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: Matrix
+~~~
+{:.output}
+
+~~~
+Loading required package: spData
+~~~
+{:.output}
+
+~~~
+To access larger datasets in this package, install the spDataLarge
+package with: `install.packages('spDataLarge',
+repos='https://nowosad.github.io/drat/', type='source'))`
+~~~
+{:.output}
+
+~~~r
 library(gtools) # contains mixsort and other useful functions
 library(maptools) # tools to manipulate spatial data
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Checking rgeos availability: TRUE
+~~~
+{:.output}
+
+~~~r
 library(parallel) # parallel computation, part of base package no
 library(rasterVis) # raster visualization operations
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: raster
+~~~
+{:.output}
+
+~~~
+Loading required package: lattice
+~~~
+{:.output}
+
+~~~
+Loading required package: latticeExtra
+~~~
+{:.output}
+
+~~~
+Loading required package: RColorBrewer
+~~~
+{:.output}
+
+~~~r
 library(raster) # raster functionalities
 library(forecast) #ARIMA forecasting 
 library(xts) #extension for time series object and analyses
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: zoo
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'zoo'
+~~~
+{:.output}
+
+~~~
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+~~~
+{:.output}
+
+~~~r
 library(zoo) # time series object and analysis
 library(lubridate) # dates functionality
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'lubridate'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:base':
+
+    date
+~~~
+{:.output}
+
+~~~r
 library(colorRamps) #contains matlab.like color palette
 library(rgeos) #contains topological operations
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+rgeos version: 0.3-26, (SVN revision 560)
+ GEOS runtime version: 3.5.1-CAPI-1.9.1 r4246 
+ Linking to sp version: 1.2-7 
+ Polygon checking: TRUE 
+~~~
+{:.output}
+
+~~~r
 library(sphet) #contains spreg, spatial regression modeling
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'sphet'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:raster':
+
+    distance
+~~~
+{:.output}
+
+~~~r
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
 #library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'plyr'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:lubridate':
+
+    here
+~~~
+{:.output}
+
+~~~r
 #library(gstat) #spatial interpolation and kriging methods
 library(readxl) #functionalities to read in excel type data
 library(psych) #pca/eigenvector decomposition functionalities
-library(sf) #spatial objects and functionalities
-library(plotrix) #various graphic functions e.g. draw.circle
-library(TOC) # TOC and ROC for raster images
-library(ROCR) # ROCR general for data.frame
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+~~~
+
+Attaching package: 'psych'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:gtools':
+
+    logit
+~~~
+{:.output}
+
+~~~r
+library(sf) #spatial objects and functionalities
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Linking to GEOS 3.5.1, GDAL 2.1.2, proj.4 4.9.3
+~~~
+{:.output}
+
+~~~r
+library(plotrix) #various graphic functions e.g. draw.circle
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'plotrix'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:psych':
+
+    rescale
+~~~
+{:.output}
+
+~~~r
+library(TOC) # TOC and ROC for raster images
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: bit
+~~~
+{:.output}
+
+~~~
+Attaching package bit
+~~~
+{:.output}
+
+~~~
+package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
+~~~
+{:.output}
+
+~~~
+creators: bit bitwhich
+~~~
+{:.output}
+
+~~~
+coercion: as.logical as.integer as.bit as.bitwhich which
+~~~
+{:.output}
+
+~~~
+operator: ! & | xor != ==
+~~~
+{:.output}
+
+~~~
+querying: print length any all min max range sum summary
+~~~
+{:.output}
+
+~~~
+bit access: length<- [ [<- [[ [[<-
+~~~
+{:.output}
+
+~~~
+for more help type ?bit
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'bit'
+~~~
+{:.output}
+
+~~~
+The following object is masked _by_ '.GlobalEnv':
+
+    chunk
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:psych':
+
+    keysort
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:base':
+
+    xor
+~~~
+{:.output}
+
+~~~r
+library(ROCR) # ROCR general for data.frame
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: gplots
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'gplots'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:plotrix':
+
+    plotCI
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:stats':
+
+    lowess
+~~~
+{:.output}
+
+~~~r
 ###### Functions used in this script
 
 create_dir_fun <- function(outDir,out_suffix=NULL){
@@ -146,7 +448,7 @@ plot(r_lc_date2) # View NLCD 2006, we will need to add the legend use the approp
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-1.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-1.png)
 
 {:.captioned}
 ~~~r
@@ -212,7 +514,7 @@ barplot(c(1,1),
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-2.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-2.png)
 
 {:.captioned}
 ~~~r
@@ -239,7 +541,7 @@ levelplot(r_lc_date2,
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-3.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-3.png)
 
 {:.captioned}
 ~~~r
@@ -258,14 +560,14 @@ head(lc_system_nlcd_df) #inspect data
 
 ~~~
 # A tibble: 6 x 5
-  id_l1 id_l2 name_l1   name_l2                     `Classification Descr~
+  id_l1 id_l2 name_l1   name_l2                     `Classification Descr…
   <dbl> <dbl> <chr>     <chr>                       <chr>                 
-1    1.   11. Water     Open Water                  Open Water- areas of ~
-2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a~
-3    2.   21. Developed Developped, Open Space      Developed, Open Space~
-4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens~
-5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int~
-6    2.   24. Developed Developed High Intensity    Developed High Intens~
+1    1.   11. Water     Open Water                  Open Water- areas of …
+2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a…
+3    2.   21. Developed Developped, Open Space      Developed, Open Space…
+4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens…
+5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int…
+6    2.   24. Developed Developed High Intensity    Developed High Intens…
 ~~~
 {:.output}
 
@@ -319,7 +621,7 @@ plot(r_date1_rec)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-4.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-4.png)
 
 {:.captioned}
 ~~~r
@@ -557,7 +859,7 @@ barplot(lc_df$diff,names.arg=lc_df$name,las=2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-5.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-5.png)
 
 {:.captioned}
 ~~~r
@@ -567,7 +869,7 @@ barplot(lc_df$perc_change,names.arg=lc_df$name,las=2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-6.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-6.png)
 
 {:.captioned}
 ~~~r
@@ -581,7 +883,7 @@ plot(r_change,main="Land transitions to developed over 2001-2011")
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-7.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-7.png)
 
 {:.captioned}
 ~~~r
@@ -605,7 +907,7 @@ plot(r_cat2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-8.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-8.png)
 
 {:.captioned}
 ~~~r
@@ -618,7 +920,7 @@ plot(r_roads,colNA="black")
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-9.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-9.png)
 
 {:.captioned}
 ~~~r
@@ -640,7 +942,7 @@ plot(r_roads_90m)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-10.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-10.png)
 
 {:.captioned}
 ~~~r
@@ -649,7 +951,7 @@ plot(r_roads_bool)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-11.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-11.png)
 
 {:.captioned}
 ~~~r
@@ -701,7 +1003,7 @@ plot(r_developped_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-12.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-12.png)
 
 {:.captioned}
 ~~~r
@@ -709,7 +1011,7 @@ plot(r_roads_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-13.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-13.png)
 
 {:.captioned}
 ~~~r
@@ -751,7 +1053,7 @@ plot(r_date1_rec_masked)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-14.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-14.png)
 
 {:.captioned}
 ~~~r
@@ -767,7 +1069,7 @@ plot(r_mask)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-15.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-15.png)
 
 {:.captioned}
 ~~~r
@@ -782,7 +1084,7 @@ plot(r_mask)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-16.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-16.png)
 
 {:.captioned}
 ~~~r
@@ -811,7 +1113,7 @@ plot(r_variables)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-17.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-17.png)
 
 {:.captioned}
 ~~~r
@@ -827,7 +1129,7 @@ plot(r_valid_pixels)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-18.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-18.png)
 
 {:.captioned}
 ~~~r
@@ -967,7 +1269,7 @@ plot(r_p)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-19.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-19.png)
 
 {:.captioned}
 ~~~r
@@ -975,7 +1277,7 @@ histogram(r_p)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-20.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-20.png)
 
 {:.captioned}
 ~~~r
@@ -991,7 +1293,7 @@ plot(r_change_harris) # boolean reference variable
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-21.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-21.png)
 
 {:.captioned}
 ~~~r
@@ -999,7 +1301,7 @@ plot(r_mask) # mask for relevant observation
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-22.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-22.png)
 
 {:.captioned}
 ~~~r
@@ -1007,7 +1309,7 @@ plot(r_p) # index variable to assess
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-23.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-23.png)
 
 {:.captioned}
 ~~~r
@@ -1020,7 +1322,7 @@ plot(roc_rast)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-24.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-24.png)
 
 {:.captioned}
 ~~~r
@@ -1043,7 +1345,7 @@ plot(toc_rast)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
-![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/unnamed-chunk-1-25.png)
+![plot of chunk unnamed-chunk-1]({{ site.baseurl }}/images/complete/unnamed-chunk-1-25.png)
 
 {:.captioned}
 ~~~r
