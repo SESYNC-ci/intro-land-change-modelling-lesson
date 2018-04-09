@@ -244,12 +244,12 @@ barplot(lc_df$perc_change,names.arg=lc_df$name,las=2)
 
 ### Create a change image to map all pixels that transitioned to the developed category:  
 
-r_cat2 <- r_date2_rec==2 # developped on date 2
+r_cat2 <- r_date2_rec==2 # developed on date 2
 r_not_cat2 <- r_date1_rec!=2 #remove areas that were already developed in date1, we do not want persistence
 
 r_change <- r_cat2 * r_not_cat2 #mask
 plot(r_change,main="Land transitions to developed over 2001-2011")
-change_tb <- freq(r_change) #Find out how many pixels transitions to developped
+change_tb <- freq(r_change) #Find out how many pixels transitions to developed
 
 #####################################
 ############# PART III: Process and Prepare variables for land change modeling ##############
@@ -261,12 +261,12 @@ change_tb <- freq(r_change) #Find out how many pixels transitions to developped
 #var3: elevation, low slope better for new development
 #var4: past land cover state that may influence future land change
 
-## 1) Generate var1 and var2 : distance to developped and distance to roads
+## 1) Generate var1 and var2 : distance to developed and distance to roads
 
 ### Distance to existing in 2001: prepare information
-r_cat2<- r_date1_rec==2 #developped in 2001
+r_cat2<- r_date1_rec==2 #developed in 2001
 plot(r_cat2)
-cat_bool_fname <- "developped_2001.tif" #input for the distance to road computation
+cat_bool_fname <- "developed_2001.tif" #input for the distance to road computation
 writeRaster(r_cat2,filename = cat_bool_fname,overwrite=T)
 
 ### Read in data for road count
@@ -289,15 +289,15 @@ writeRaster(r_roads_bool,filename = roads_bool_fname,overwrite=T)
 ### This part could be transformed into a function but we keep it for clarity and learning:
 if(gdal_installed==TRUE){
   
-  ## Distance from developped land in 2001
+  ## Distance from developed land in 2001
   srcfile <- cat_bool_fname  
-  dstfile_developped <- file.path(out_dir,paste("developped_distance_",out_suffix,file_format,sep=""))
+  dstfile_developed <- file.path(out_dir,paste("developed_distance_",out_suffix,file_format,sep=""))
   n_values <- "1"
   
   ### Prepare GDAL command: note that gdal_proximity doesn't like when path is too long
-  cmd_developped_str <- paste("gdal_proximity.py",
+  cmd_developed_str <- paste("gdal_proximity.py",
                               basename(srcfile),
-                              basename(dstfile_developped),
+                              basename(dstfile_developed),
                               "-values",n_values,sep=" ")
 
   ### Distance from roads
@@ -313,21 +313,21 @@ if(gdal_installed==TRUE){
   sys_os <- as.list(Sys.info())$sysname #Find what OS system is in use.
   
   if(sys_os=="Windows"){
-    shell(cmd_developped_str)
+    shell(cmd_developed_str)
     shell(cmd_roads_str)
   }else{
-    system(cmd_developped_str)
+    system(cmd_developed_str)
     system(cmd_roads_str)
   }
   r_roads_distance <- raster(dstfile_roads)
-  r_developped_distance <- raster(dstfile_developped)
+  r_developed_distance <- raster(dstfile_developed)
   
 }else{
-  r_developped_distance <- raster(file.path(in_dir,paste("developped_distance_",file_format,sep="")))
+  r_developed_distance <- raster(file.path(in_dir,paste("developed_distance_",file_format,sep="")))
   r_roads_distance <- raster(file.path(in_dir_var,paste("roads_bool_distance",file_format,sep="")))
 }
 
-plot(r_developped_distance) #This is at 90m.
+plot(r_developed_distance) #This is at 90m.
 plot(r_roads_distance) #This is at 90m.
 
 #Now rescale the distance...
@@ -336,9 +336,9 @@ max_val <- cellStats(r_roads_distance,max)
 r_roads_dist <-  (max_val - r_roads_distance) / (max_val - min_val) #high values close to 1 for areas close to roads
 
 
-min_val <- cellStats(r_developped_distance,min) 
-max_val <- cellStats(r_developped_distance,max)
-r_developped_dist <-  (max_val - r_developped_distance) / (max_val - min_val)
+min_val <- cellStats(r_developed_distance,min) 
+max_val <- cellStats(r_developed_distance,max)
+r_developed_dist <-  (max_val - r_developed_distance) / (max_val - min_val)
 
 ## 2) Generate var3 : slope
 r_elevation <- raster(file.path(in_dir_var,elevation_fname))
@@ -361,7 +361,7 @@ plot(r_date1_rec_masked)
 ############# PART IV: Run Model and perform assessment ##############
 
 ##############
-###### Step 1: Consistent masking and generate mask removing water (1) and developped (2) in 2001
+###### Step 1: Consistent masking and generate mask removing water (1) and developed (2) in 2001
 
 #r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)*r_county_harris
 r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)
@@ -380,9 +380,9 @@ tb_study_area <- freq(r_mask)
 print(tb_study_area)
 
 ## Generate dataset for Harris county
-r_variables <- stack(r_change,r_date1_rec_masked,r_slope,r_roads_dist,r_developped_dist)
+r_variables <- stack(r_change,r_date1_rec_masked,r_slope,r_roads_dist,r_developed_dist)
 r_variables <- mask(r_variables,mask=r_mask) # mask to keep relevant area
-names(r_variables) <- c("change","land_cover","slope","roads_dist","developped_dist")
+names(r_variables) <- c("change","land_cover","slope","roads_dist","developed_dist")
 NAvalue(r_variables) <- NA_flag_val
 
 ## Examine all the variables
@@ -403,7 +403,7 @@ freq(r_valid_pixels)
 r_mask <- r_valid_pixels > 0
 r_variables <- mask(r_variables,r_mask)
 #r_variables <- freq(r_test2,value=NA,merge=T)
-names(r_variables) <- c("change","land_cover","slope","roads_dist","developped_dist")
+names(r_variables) <- c("change","land_cover","slope","roads_dist","developed_dist")
 
 ###############
 ###### Step 2: Fit glm model and generate predictions
@@ -414,9 +414,9 @@ variables_df$land_cover <- as.factor(variables_df$land_cover)
 variables_df$change <- as.factor(variables_df$change)
 
 names(variables_df)
-#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developped_dist")
+#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developed_dist")
 
-mod_glm <- glm(change ~ land_cover + slope + roads_dist + developped_dist, 
+mod_glm <- glm(change ~ land_cover + slope + roads_dist + developed_dist, 
            data=variables_df , family=binomial())
 
 print(mod_glm)

@@ -27,335 +27,33 @@ editor_options:
 
 library(sp) # spatial/geographfic objects and functions
 library(rgdal) #GDAL/OGR binding for R with functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-rgdal: version: 1.2-18, (SVN revision 718)
- Geospatial Data Abstraction Library extensions to R successfully loaded
- Loaded GDAL runtime: GDAL 2.1.2, released 2016/10/24
- Path to GDAL shared files: /usr/share/gdal/2.1
- GDAL binary built with GEOS: TRUE 
- Loaded PROJ.4 runtime: Rel. 4.9.3, 15 August 2016, [PJ_VERSION: 493]
- Path to PROJ.4 shared files: (autodetected)
- Linking to sp version: 1.2-7 
-~~~
-{:.output}
-
-~~~r
 library(spdep) #spatial analyses operations, functions etc.
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Loading required package: Matrix
-~~~
-{:.output}
-
-~~~
-Loading required package: spData
-~~~
-{:.output}
-
-~~~
-To access larger datasets in this package, install the spDataLarge
-package with: `install.packages('spDataLarge',
-repos='https://nowosad.github.io/drat/', type='source'))`
-~~~
-{:.output}
-
-~~~r
 library(gtools) # contains mixsort and other useful functions
 library(maptools) # tools to manipulate spatial data
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Checking rgeos availability: TRUE
-~~~
-{:.output}
-
-~~~r
 library(parallel) # parallel computation, part of base package no
 library(rasterVis) # raster visualization operations
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Loading required package: raster
-~~~
-{:.output}
-
-~~~
-Loading required package: lattice
-~~~
-{:.output}
-
-~~~
-Loading required package: latticeExtra
-~~~
-{:.output}
-
-~~~
-Loading required package: RColorBrewer
-~~~
-{:.output}
-
-~~~r
 library(raster) # raster functionalities
 library(forecast) #ARIMA forecasting 
 library(xts) #extension for time series object and analyses
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Loading required package: zoo
-~~~
-{:.output}
-
-~~~
-
-Attaching package: 'zoo'
-~~~
-{:.output}
-
-~~~
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-~~~
-{:.output}
-
-~~~r
 library(zoo) # time series object and analysis
 library(lubridate) # dates functionality
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-
-Attaching package: 'lubridate'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:base':
-
-    date
-~~~
-{:.output}
-
-~~~r
 library(colorRamps) #contains matlab.like color palette
 library(rgeos) #contains topological operations
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-rgeos version: 0.3-26, (SVN revision 560)
- GEOS runtime version: 3.5.1-CAPI-1.9.1 r4246 
- Linking to sp version: 1.2-7 
- Polygon checking: TRUE 
-~~~
-{:.output}
-
-~~~r
 library(sphet) #contains spreg, spatial regression modeling
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-
-Attaching package: 'sphet'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:raster':
-
-    distance
-~~~
-{:.output}
-
-~~~r
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
 #library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-
-Attaching package: 'plyr'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:lubridate':
-
-    here
-~~~
-{:.output}
-
-~~~r
 #library(gstat) #spatial interpolation and kriging methods
 library(readxl) #functionalities to read in excel type data
 library(psych) #pca/eigenvector decomposition functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-
-Attaching package: 'psych'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:gtools':
-
-    logit
-~~~
-{:.output}
-
-~~~r
 library(sf) #spatial objects and functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Linking to GEOS 3.5.1, GDAL 2.1.2, proj.4 4.9.3
-~~~
-{:.output}
-
-~~~r
 library(plotrix) #various graphic functions e.g. draw.circle
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-
-Attaching package: 'plotrix'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:psych':
-
-    rescale
-~~~
-{:.output}
-
-~~~r
 library(TOC) # TOC and ROC for raster images
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-~~~
-Loading required package: bit
-~~~
-{:.output}
-
-~~~
-Attaching package bit
-~~~
-{:.output}
-
-~~~
-package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
-~~~
-{:.output}
-
-~~~
-creators: bit bitwhich
-~~~
-{:.output}
-
-~~~
-coercion: as.logical as.integer as.bit as.bitwhich which
-~~~
-{:.output}
-
-~~~
-operator: ! & | xor != ==
-~~~
-{:.output}
-
-~~~
-querying: print length any all min max range sum summary
-~~~
-{:.output}
-
-~~~
-bit access: length<- [ [<- [[ [[<-
-~~~
-{:.output}
-
-~~~
-for more help type ?bit
-~~~
-{:.output}
-
-~~~
-
-Attaching package: 'bit'
-~~~
-{:.output}
-
-~~~
-The following object is masked _by_ '.GlobalEnv':
-
-    chunk
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:psych':
-
-    keysort
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:base':
-
-    xor
-~~~
-{:.output}
-
-~~~r
 library(ROCR) # ROCR general for data.frame
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
 
-~~~
-Loading required package: gplots
-~~~
-{:.output}
-
-~~~
-
-Attaching package: 'gplots'
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:plotrix':
-
-    plotCI
-~~~
-{:.output}
-
-~~~
-The following object is masked from 'package:stats':
-
-    lowess
-~~~
-{:.output}
-
-~~~r
 ###### Functions used in this script
 
 create_dir_fun <- function(outDir,out_suffix=NULL){
@@ -560,14 +258,14 @@ head(lc_system_nlcd_df) #inspect data
 
 ~~~
 # A tibble: 6 x 5
-  id_l1 id_l2 name_l1   name_l2                     `Classification Descr…
+  id_l1 id_l2 name_l1   name_l2                     `Classification Descr~
   <dbl> <dbl> <chr>     <chr>                       <chr>                 
-1    1.   11. Water     Open Water                  Open Water- areas of …
-2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a…
-3    2.   21. Developed Developped, Open Space      Developed, Open Space…
-4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens…
-5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int…
-6    2.   24. Developed Developed High Intensity    Developed High Intens…
+1    1.   11. Water     Open Water                  Open Water- areas of ~
+2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a~
+3    2.   21. Developed Developped, Open Space      Developed, Open Space~
+4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens~
+5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int~
+6    2.   24. Developed Developed High Intensity    Developed High Intens~
 ~~~
 {:.output}
 
@@ -875,7 +573,7 @@ barplot(lc_df$perc_change,names.arg=lc_df$name,las=2)
 ~~~r
 ### Create a change image to map all pixels that transitioned to the developed category:  
 
-r_cat2 <- r_date2_rec==2 # developped on date 2
+r_cat2 <- r_date2_rec==2 # developed on date 2
 r_not_cat2 <- r_date1_rec!=2 #remove areas that were already developed in date1, we do not want persistence
 
 r_change <- r_cat2 * r_not_cat2 #mask
@@ -887,7 +585,7 @@ plot(r_change,main="Land transitions to developed over 2001-2011")
 
 {:.captioned}
 ~~~r
-change_tb <- freq(r_change) #Find out how many pixels transitions to developped
+change_tb <- freq(r_change) #Find out how many pixels transitions to developed
 
 #####################################
 ############# PART III: Process and Prepare variables for land change modeling ##############
@@ -899,10 +597,10 @@ change_tb <- freq(r_change) #Find out how many pixels transitions to developped
 #var3: elevation, low slope better for new development
 #var4: past land cover state that may influence future land change
 
-## 1) Generate var1 and var2 : distance to developped and distance to roads
+## 1) Generate var1 and var2 : distance to developed and distance to roads
 
 ### Distance to existing in 2001: prepare information
-r_cat2<- r_date1_rec==2 #developped in 2001
+r_cat2<- r_date1_rec==2 #developed in 2001
 plot(r_cat2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -911,7 +609,7 @@ plot(r_cat2)
 
 {:.captioned}
 ~~~r
-cat_bool_fname <- "developped_2001.tif" #input for the distance to road computation
+cat_bool_fname <- "developed_2001.tif" #input for the distance to road computation
 writeRaster(r_cat2,filename = cat_bool_fname,overwrite=T)
 
 ### Read in data for road count
@@ -961,15 +659,15 @@ writeRaster(r_roads_bool,filename = roads_bool_fname,overwrite=T)
 ### This part could be transformed into a function but we keep it for clarity and learning:
 if(gdal_installed==TRUE){
   
-  ## Distance from developped land in 2001
+  ## Distance from developed land in 2001
   srcfile <- cat_bool_fname  
-  dstfile_developped <- file.path(out_dir,paste("developped_distance_",out_suffix,file_format,sep=""))
+  dstfile_developed <- file.path(out_dir,paste("developed_distance_",out_suffix,file_format,sep=""))
   n_values <- "1"
   
   ### Prepare GDAL command: note that gdal_proximity doesn't like when path is too long
-  cmd_developped_str <- paste("gdal_proximity.py",
+  cmd_developed_str <- paste("gdal_proximity.py",
                               basename(srcfile),
-                              basename(dstfile_developped),
+                              basename(dstfile_developed),
                               "-values",n_values,sep=" ")
 
   ### Distance from roads
@@ -985,21 +683,21 @@ if(gdal_installed==TRUE){
   sys_os <- as.list(Sys.info())$sysname #Find what OS system is in use.
   
   if(sys_os=="Windows"){
-    shell(cmd_developped_str)
+    shell(cmd_developed_str)
     shell(cmd_roads_str)
   }else{
-    system(cmd_developped_str)
+    system(cmd_developed_str)
     system(cmd_roads_str)
   }
   r_roads_distance <- raster(dstfile_roads)
-  r_developped_distance <- raster(dstfile_developped)
+  r_developed_distance <- raster(dstfile_developed)
   
 }else{
-  r_developped_distance <- raster(file.path(in_dir,paste("developped_distance_",file_format,sep="")))
+  r_developed_distance <- raster(file.path(in_dir,paste("developed_distance_",file_format,sep="")))
   r_roads_distance <- raster(file.path(in_dir_var,paste("roads_bool_distance",file_format,sep="")))
 }
 
-plot(r_developped_distance) #This is at 90m.
+plot(r_developed_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
 
@@ -1021,9 +719,9 @@ max_val <- cellStats(r_roads_distance,max)
 r_roads_dist <-  (max_val - r_roads_distance) / (max_val - min_val) #high values close to 1 for areas close to roads
 
 
-min_val <- cellStats(r_developped_distance,min) 
-max_val <- cellStats(r_developped_distance,max)
-r_developped_dist <-  (max_val - r_developped_distance) / (max_val - min_val)
+min_val <- cellStats(r_developed_distance,min) 
+max_val <- cellStats(r_developed_distance,max)
+r_developed_dist <-  (max_val - r_developed_distance) / (max_val - min_val)
 
 ## 2) Generate var3 : slope
 r_elevation <- raster(file.path(in_dir_var,elevation_fname))
@@ -1061,7 +759,7 @@ plot(r_date1_rec_masked)
 ############# PART IV: Run Model and perform assessment ##############
 
 ##############
-###### Step 1: Consistent masking and generate mask removing water (1) and developped (2) in 2001
+###### Step 1: Consistent masking and generate mask removing water (1) and developed (2) in 2001
 
 #r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)*r_county_harris
 r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)
@@ -1103,9 +801,9 @@ print(tb_study_area)
 
 ~~~r
 ## Generate dataset for Harris county
-r_variables <- stack(r_change,r_date1_rec_masked,r_slope,r_roads_dist,r_developped_dist)
+r_variables <- stack(r_change,r_date1_rec_masked,r_slope,r_roads_dist,r_developed_dist)
 r_variables <- mask(r_variables,mask=r_mask) # mask to keep relevant area
-names(r_variables) <- c("change","land_cover","slope","roads_dist","developped_dist")
+names(r_variables) <- c("change","land_cover","slope","roads_dist","developed_dist")
 NAvalue(r_variables) <- NA_flag_val
 
 ## Examine all the variables
@@ -1158,7 +856,7 @@ freq(r_valid_pixels)
 r_mask <- r_valid_pixels > 0
 r_variables <- mask(r_variables,r_mask)
 #r_variables <- freq(r_test2,value=NA,merge=T)
-names(r_variables) <- c("change","land_cover","slope","roads_dist","developped_dist")
+names(r_variables) <- c("change","land_cover","slope","roads_dist","developed_dist")
 
 ###############
 ###### Step 2: Fit glm model and generate predictions
@@ -1182,15 +880,15 @@ names(variables_df)
 {:.text-document title="{{ site.handouts[0] }}"}
 
 ~~~
-[1] "change"          "land_cover"      "slope"           "roads_dist"     
-[5] "developped_dist"
+[1] "change"         "land_cover"     "slope"          "roads_dist"    
+[5] "developed_dist"
 ~~~
 {:.output}
 
 ~~~r
-#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developped_dist")
+#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developed_dist")
 
-mod_glm <- glm(change ~ land_cover + slope + roads_dist + developped_dist, 
+mod_glm <- glm(change ~ land_cover + slope + roads_dist + developed_dist, 
            data=variables_df , family=binomial())
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -1207,16 +905,16 @@ print(mod_glm)
 
 ~~~
 
-Call:  glm(formula = change ~ land_cover + slope + roads_dist + developped_dist, 
+Call:  glm(formula = change ~ land_cover + slope + roads_dist + developed_dist, 
     family = binomial(), data = variables_df)
 
 Coefficients:
-    (Intercept)      land_cover4      land_cover5      land_cover7  
-      -308.5419          -0.9241          -1.2272          -0.7449  
-    land_cover8      land_cover9            slope       roads_dist  
-        -1.0081          -1.2218          -0.2112         298.0062  
-developped_dist  
-        11.1344  
+   (Intercept)     land_cover4     land_cover5     land_cover7  
+     -308.5419         -0.9241         -1.2272         -0.7449  
+   land_cover8     land_cover9           slope      roads_dist  
+       -1.0081         -1.2218         -0.2112        298.0062  
+developed_dist  
+       11.1344  
 
 Degrees of Freedom: 215436 Total (i.e. Null);  215428 Residual
 Null Deviance:	    142300 
@@ -1232,7 +930,7 @@ summary(mod_glm)
 ~~~
 
 Call:
-glm(formula = change ~ land_cover + slope + roads_dist + developped_dist, 
+glm(formula = change ~ land_cover + slope + roads_dist + developed_dist, 
     family = binomial(), data = variables_df)
 
 Deviance Residuals: 
@@ -1240,16 +938,16 @@ Deviance Residuals:
 -1.3712  -0.5328  -0.2546  -0.0418   6.6490  
 
 Coefficients:
-                  Estimate Std. Error z value Pr(>|z|)    
-(Intercept)     -308.54187    3.05822 -100.89   <2e-16 ***
-land_cover4       -0.92415    0.04763  -19.40   <2e-16 ***
-land_cover5       -1.22723    0.06081  -20.18   <2e-16 ***
-land_cover7       -0.74491    0.05151  -14.46   <2e-16 ***
-land_cover8       -1.00809    0.04851  -20.78   <2e-16 ***
-land_cover9       -1.22180    0.05087  -24.02   <2e-16 ***
-slope             -0.21119    0.01307  -16.16   <2e-16 ***
-roads_dist       298.00624    3.07499   96.91   <2e-16 ***
-developped_dist   11.13435    0.26236   42.44   <2e-16 ***
+                 Estimate Std. Error z value Pr(>|z|)    
+(Intercept)    -308.54187    3.05822 -100.89   <2e-16 ***
+land_cover4      -0.92415    0.04763  -19.40   <2e-16 ***
+land_cover5      -1.22723    0.06081  -20.18   <2e-16 ***
+land_cover7      -0.74491    0.05151  -14.46   <2e-16 ***
+land_cover8      -1.00809    0.04851  -20.78   <2e-16 ***
+land_cover9      -1.22180    0.05087  -24.02   <2e-16 ***
+slope            -0.21119    0.01307  -16.16   <2e-16 ***
+roads_dist      298.00624    3.07499   96.91   <2e-16 ***
+developed_dist   11.13435    0.26236   42.44   <2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
