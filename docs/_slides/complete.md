@@ -27,33 +27,335 @@ editor_options:
 
 library(sp) # spatial/geographfic objects and functions
 library(rgdal) #GDAL/OGR binding for R with functionalities
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+rgdal: version: 1.2-18, (SVN revision 718)
+ Geospatial Data Abstraction Library extensions to R successfully loaded
+ Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
+ Path to GDAL shared files: /usr/share/gdal/2.1
+ GDAL binary built with GEOS: TRUE 
+ Loaded PROJ.4 runtime: Rel. 4.9.2, 08 September 2015, [PJ_VERSION: 492]
+ Path to PROJ.4 shared files: (autodetected)
+ Linking to sp version: 1.2-7 
+~~~
+{:.output}
+
+~~~r
 library(spdep) #spatial analyses operations, functions etc.
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: Matrix
+~~~
+{:.output}
+
+~~~
+Loading required package: spData
+~~~
+{:.output}
+
+~~~
+To access larger datasets in this package, install the spDataLarge
+package with: `install.packages('spDataLarge',
+repos='https://nowosad.github.io/drat/', type='source'))`
+~~~
+{:.output}
+
+~~~r
 library(gtools) # contains mixsort and other useful functions
 library(maptools) # tools to manipulate spatial data
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Checking rgeos availability: TRUE
+~~~
+{:.output}
+
+~~~r
 library(parallel) # parallel computation, part of base package no
 library(rasterVis) # raster visualization operations
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: raster
+~~~
+{:.output}
+
+~~~
+Loading required package: lattice
+~~~
+{:.output}
+
+~~~
+Loading required package: latticeExtra
+~~~
+{:.output}
+
+~~~
+Loading required package: RColorBrewer
+~~~
+{:.output}
+
+~~~r
 library(raster) # raster functionalities
 library(forecast) #ARIMA forecasting 
 library(xts) #extension for time series object and analyses
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: zoo
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'zoo'
+~~~
+{:.output}
+
+~~~
+The following objects are masked from 'package:base':
+
+    as.Date, as.Date.numeric
+~~~
+{:.output}
+
+~~~r
 library(zoo) # time series object and analysis
 library(lubridate) # dates functionality
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'lubridate'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:base':
+
+    date
+~~~
+{:.output}
+
+~~~r
 library(colorRamps) #contains matlab.like color palette
 library(rgeos) #contains topological operations
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+rgeos version: 0.3-26, (SVN revision 560)
+ GEOS runtime version: 3.5.1-CAPI-1.9.1 r4246 
+ Linking to sp version: 1.2-5 
+ Polygon checking: TRUE 
+~~~
+{:.output}
+
+~~~r
 library(sphet) #contains spreg, spatial regression modeling
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'sphet'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:raster':
+
+    distance
+~~~
+{:.output}
+
+~~~r
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
 #library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'plyr'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:lubridate':
+
+    here
+~~~
+{:.output}
+
+~~~r
 #library(gstat) #spatial interpolation and kriging methods
 library(readxl) #functionalities to read in excel type data
 library(psych) #pca/eigenvector decomposition functionalities
-library(sf) #spatial objects and functionalities
-library(plotrix) #various graphic functions e.g. draw.circle
-library(TOC) # TOC and ROC for raster images
-library(ROCR) # ROCR general for data.frame
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+~~~
+
+Attaching package: 'psych'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:gtools':
+
+    logit
+~~~
+{:.output}
+
+~~~r
+library(sf) #spatial objects and functionalities
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Linking to GEOS 3.5.1, GDAL 2.1.3, proj.4 4.9.2
+~~~
+{:.output}
+
+~~~r
+library(plotrix) #various graphic functions e.g. draw.circle
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+
+Attaching package: 'plotrix'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:psych':
+
+    rescale
+~~~
+{:.output}
+
+~~~r
+library(TOC) # TOC and ROC for raster images
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: bit
+~~~
+{:.output}
+
+~~~
+Attaching package bit
+~~~
+{:.output}
+
+~~~
+package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
+~~~
+{:.output}
+
+~~~
+creators: bit bitwhich
+~~~
+{:.output}
+
+~~~
+coercion: as.logical as.integer as.bit as.bitwhich which
+~~~
+{:.output}
+
+~~~
+operator: ! & | xor != ==
+~~~
+{:.output}
+
+~~~
+querying: print length any all min max range sum summary
+~~~
+{:.output}
+
+~~~
+bit access: length<- [ [<- [[ [[<-
+~~~
+{:.output}
+
+~~~
+for more help type ?bit
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'bit'
+~~~
+{:.output}
+
+~~~
+The following object is masked _by_ '.GlobalEnv':
+
+    chunk
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:psych':
+
+    keysort
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:base':
+
+    xor
+~~~
+{:.output}
+
+~~~r
+library(ROCR) # ROCR general for data.frame
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+
+~~~
+Loading required package: gplots
+~~~
+{:.output}
+
+~~~
+
+Attaching package: 'gplots'
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:plotrix':
+
+    plotCI
+~~~
+{:.output}
+
+~~~
+The following object is masked from 'package:stats':
+
+    lowess
+~~~
+{:.output}
+
+~~~r
 ###### Functions used in this script
 
 create_dir_fun <- function(outDir,out_suffix=NULL){
