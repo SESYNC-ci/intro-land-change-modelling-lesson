@@ -564,7 +564,7 @@ head(lc_system_nlcd_df) #inspect data
   <dbl> <dbl> <chr>     <chr>                       <chr>                 
 1    1.   11. Water     Open Water                  Open Water- areas of ~
 2    1.   12. Water     Perennial Ice/Snow          Perennial Ice/Snow- a~
-3    2.   21. Developed Developped, Open Space      Developed, Open Space~
+3    2.   21. Developed Developed, Open Space       Developed, Open Space~
 4    2.   22. Developed Developed, Low Intensity    Developed, Low Intens~
 5    2.   23. Developed Developed, Medium Intensity Developed, Medium Int~
 6    2.   24. Developed Developed High Intensity    Developed High Intens~
