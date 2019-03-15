@@ -439,25 +439,63 @@ sum(variables_df$training)/length(variables_df$training)
 sum(variables_df$testing)/length(variables_df$testing)
 
 ###############
-###### Step 2: Fit glm model and generate predictions
+###### Step 3: Fit glm model and generate predictions
 
-variables_df <- na.omit(as.data.frame(r_variables))
-dim(variables_df)
-variables_df$land_cover <- as.factor(variables_df$land_cover)
-variables_df$change <- as.factor(variables_df$change)
+variables_df$land_cover <- as.factor(variables_df$land_cover) # convert to categorical variable
+variables_df$change <- as.factor(variables_df$change) # convert to categorical variable
 
 names(variables_df)
-#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developped_dist")
 
+data_training_df <- variables_df[variables_df$training==1,]
+data_testing_df <- variables_df[variables_df$training==0,]
+
+## Now generate the glm model using the logistic specification:
 mod_glm <- glm(change ~ land_cover + slope + roads_dist + developped_dist, 
-           data=variables_df , family=binomial())
+               data=data_training_df , family=binomial())
 
 print(mod_glm)
 summary(mod_glm)
 
+pred_test <- predict( mod_glm, data_testing_df, type="response") #predict on testing 
+
+variables_sp <- variables_df
+coordinates(variables_sp) <- variables_sp[c("x","y")]
+
+r_training <- rasterize(variables_sp,y=r_variables,field="training")
+r_testing <- rasterize(variables_sp,y=r_variables,field="testing")
+
+### Generate probability map from fitted model:
 r_p <- predict(r_variables, mod_glm, type="response")
+#r_out <- predict(r_variables, mod_glm, type="response")
+
 plot(r_p)
 histogram(r_p)
+
+### save outputs:
+names_rasters <- names(r_out)
+r_out <- stack(r_out,r_training,r_testing,r_p)
+names(r_out) <- c(names_rasters,"training","testing","prob")
+
+out_filename <- paste0("r_variables_harris_county","_",out_suffix,file_format)
+writeRaster(r_out,
+            filename=file.path(out_dir,out_filename),
+            bylayer=T,
+            suffix=names(r_out),
+            overwrite=T)
+dim(r_p)
+ncell(r_p)
+dim(variables_df)
+#test <- st_as_sf(r_out)
+variables_out_df <- na.omit(as.data.frame(r_out)) # convert raster stack to data.frame
+dim(variables_out_df)
+names(variables_out_df)
+
+out_filename <- paste0("r_variables_harris_county","_",out_suffix,".txt")
+
+write.table(variables_out_df,
+            file=file.path(out_dir,out_filename),
+            sep=",",
+            row.names=F)
 
 ###############
 ###### Step 3: Model assessment with ROC
