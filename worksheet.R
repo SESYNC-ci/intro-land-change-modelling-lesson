@@ -197,7 +197,7 @@ dim(lc_system_nlcd_df) # We have categories that are not relevant to the study a
 lc_system_nlcd_df <- subset(lc_system_nlcd_df,id_l2%in%freq_tb_nlcd$value ) 
 dim(lc_system_nlcd_df) # Now 15 land categories instead of 20.
 
-### Selectet relevant columns for the reclassification
+### Select relevant columns for the reclassification
 rec_df <- lc_system_nlcd_df[,c(2,1)]
 r_date1_rec <- subs(r_lc_date1,rec_df,by="id_l2","id_l1")
 r_date2_rec <- subs(r_lc_date2,rec_df,by="id_l2","id_l1")
@@ -205,7 +205,7 @@ r_date2_rec <- subs(r_lc_date2,rec_df,by="id_l2","id_l1")
 plot(r_date1_rec)
 
 rec_xtab_df <- crosstab(r_date1_rec,r_date2_rec,long=T)
-names(rec_xtab_df) <- c("2001","2011","freq")
+names(rec_xtab_df) <- c("2001","2006","freq")
 
 head(rec_xtab_df)
 dim(rec_xtab_df) #9*9 possible transitions if we include NA values
@@ -247,7 +247,7 @@ r_cat2 <- r_date2_rec==2 # developped on date 2
 r_not_cat2 <- r_date1_rec!=2 #remove areas that were already developed in date1, we do not want persistence
 
 r_change <- r_cat2 * r_not_cat2 #mask
-plot(r_change,main="Land transitions to developed over 2001-2011")
+plot(r_change,main="Land transitions to developed over 2001-2006")
 change_tb <- freq(r_change) #Find out how many pixels transitions to developped
 
 #####################################
