@@ -416,6 +416,28 @@ names(r_out)[(n_name-1):n_name] <- c("x","y")
 variables_df <- na.omit(as.data.frame(r_out)) # convert raster stack to data.frame
 dim(variables_df)
 
+##############
+##### Step 2: Prepare model for predictions: Split data into training and testing
+
+if (seed_number>0) {
+  set.seed(seed_number)                        #Using a seed number allow results based on random number to be compared...
+}
+
+n<- nrow(variables_df) # number of observations 
+
+ns<-n-round(n*prop)   #Create a sample from the data frame with for example 70% of the rows
+nv<-n-ns              #create a sample for validation with prop of the rows
+ind.training <- sample(nrow(variables_df), size=ns, replace=FALSE) #This selects the index position for x% of the rows taken randomly
+ind.testing <- setdiff(1:nrow(variables_df), ind.training)
+
+variables_df$training <- 0
+variables_df$training[ind.training] <-  1
+variables_df$testing <-  0
+variables_df$testing[ind.testing] <-  1
+
+sum(variables_df$training)/length(variables_df$training)
+sum(variables_df$testing)/length(variables_df$testing)
+
 ###############
 ###### Step 2: Fit glm model and generate predictions
 
