@@ -143,7 +143,6 @@ dim(lc_legend_df) #contains a lot of empty rows
 lc_legend_df<- subset(lc_legend_df,COUNT>0) #subset the data to remove unsured rows
 ### Generate a palette color from the input Red, Green and Blue information using RGB encoding:
 
-
 lc_legend_df$rgb <- paste(lc_legend_df$Red,lc_legend_df$Green,lc_legend_df$Blue,sep=",") #combine
 
 ### row 2 correspond to the "open water" category
@@ -160,7 +159,7 @@ barplot(c(1,1),
 ### Let's generate a color for all the land cover categories by using lapply and function
 n_cat <- nrow(lc_legend_df)
 lc_col_palette <- lapply(1:n_cat,
-                 FUN=function(i){rgb(lc_legend_df$Red[i],lc_legend_df$Green[i],lc_legend_df$Blue[i],maxColorValue = 255)})
+                         FUN=function(i){rgb(lc_legend_df$Red[i],lc_legend_df$Green[i],lc_legend_df$Blue[i],maxColorValue = 255)})
 lc_col_palette <- unlist(lc_col_palette)
 
 lc_legend_df$palette <- lc_col_palette
