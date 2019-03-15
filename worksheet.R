@@ -90,19 +90,22 @@ elevation_fname <- "srtm_Houston_area_90m.tif" #SRTM elevation
 roads_fname <- "r_roads_Harris.tif" #Road count for Harris county
 
 ### Aggreagate NLCD input files
-infile_land_cover_date1 <- "agg_3_r_nlcd2001_Houston.tif"
-infile_land_cover_date2 <- "agg_3_r_nlcd2006_Houston.tif"
-infile_land_cover_date3 <- "agg_3_r_nlcd2011_Houston.tif"
+infile_land_cover_date1 <- "agg_3_r_nlcd2001_Houston.tif" # land cover map in 2001
+infile_land_cover_date2 <- "agg_3_r_nlcd2006_Houston.tif" # land cover map in 2006
+infile_land_cover_date3 <- "agg_3_r_nlcd2011_Houston.tif" # land cover map in 2011
 
 infile_name_nlcd_legend <- "nlcd_legend.txt"
 infile_name_nlcd_classification_system <- "classification_system_nlcd_legend.xlsx"
+
+seed_number <- 100 #random seed number used for reproducibility of results
+prop <- 0.3 # proportion retained for testing of accuracy results
 
 ######################### START SCRIPT ###############################
 
 ## First create an output directory to separate inputs and outputs
 
 if(is.null(out_dir)){
-  out_dir <- dirname(in_dir) #output will be created in the input dir
+  out_dir <- dirname(in_dir_var) #output will be created in the input dir
 }
 
 out_suffix_s <- out_suffix #can modify name of output suffix
