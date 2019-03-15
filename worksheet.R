@@ -298,7 +298,7 @@ if(gdal_installed==TRUE){
                               basename(srcfile),
                               basename(dstfile_developped),
                               "-values",n_values,sep=" ")
-
+  
   ### Distance from roads
   srcfile <- roads_bool_fname 
   dstfile_roads <- file.path(out_dir,paste("roads_bool_distance_",out_suffix,file_format,sep=""))
@@ -308,7 +308,7 @@ if(gdal_installed==TRUE){
   cmd_roads_str <- paste("gdal_proximity.py",basename(srcfile),
                          basename(dstfile_roads),
                          "-values",n_values,sep=" ")
-
+  
   sys_os <- as.list(Sys.info())$sysname #Find what OS system is in use.
   
   if(sys_os=="Windows"){
@@ -322,7 +322,7 @@ if(gdal_installed==TRUE){
   r_developped_distance <- raster(dstfile_developped)
   
 }else{
-  r_developped_distance <- raster(file.path(in_dir,paste("developped_distance_",file_format,sep="")))
+  r_developped_distance <- raster(file.path(in_dir,paste("developped_distance",file_format,sep="")))
   r_roads_distance <- raster(file.path(in_dir_var,paste("roads_bool_distance",file_format,sep="")))
 }
 
@@ -352,7 +352,7 @@ r_slope <- terrain(r_elevation_reg,unit="degrees")
 ## 3) Generate var4 : past land cover state
 
 ### reclass Land cover
-r_mask <- r_date1_rec==2 #Remove developed land from  
+r_mask <- r_date1_rec==2 #Remove developed land in date 1 from the analysis because it cannot change to developed 
 r_date1_rec_masked <- mask(r_date1_rec,r_mask,maskvalue=1)
 plot(r_date1_rec_masked)
 
@@ -362,7 +362,6 @@ plot(r_date1_rec_masked)
 ##############
 ###### Step 1: Consistent masking and generate mask removing water (1) and developped (2) in 2001
 
-#r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)*r_county_harris
 r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)
 plot(r_mask)
 NAvalue(r_mask) <- 0 
@@ -403,6 +402,19 @@ r_mask <- r_valid_pixels > 0
 r_variables <- mask(r_variables,r_mask)
 #r_variables <- freq(r_test2,value=NA,merge=T)
 names(r_variables) <- c("change","land_cover","slope","roads_dist","developped_dist")
+
+###
+r_x <-init(r_variables,v="x")
+r_y <-init(r_variables,v="y")
+
+r_out <- stack(r_variables,r_x,r_y)
+
+n_name<- nlayers((r_out))
+names(r_out)[(n_name-1):n_name] <- c("x","y")
+
+## Convert to data.frame, only advisable when small dataset
+variables_df <- na.omit(as.data.frame(r_out)) # convert raster stack to data.frame
+dim(variables_df)
 
 ###############
 ###### Step 2: Fit glm model and generate predictions
