@@ -1,17 +1,17 @@
 ####################################   Land Use and Land Cover Change   #######################################
 ############################  Analyze Land Cover change in Houston  #######################################
-#This script performs analyses for the Exercise 4 of the Geospatial Short Course using aggregated NLCD values.
+#This script performs analyses for a land cover change model using NLCD aggregated values.
 #The goal is to assess land cover change using two land cover maps in the Houston areas.
 #Additional datasets are provided for the land cover change modeling. A model is built for Harris county.
 #
 #AUTHORS: Benoit Parmentier                                             
 #DATE CREATED: 03/16/2018 
-#DATE MODIFIED: 03/28/2018
+#DATE MODIFIED: 02/25/2019
 #Version: 1
-#PROJECT: SESYNC and AAG 2018 Geospatial Short Course 
+#PROJECT: AAG 2019 Geospatial Analysis workshop, Geospatial Data Analysis Short Course, Geo-Computation and Environmental Analysis Yale.  
 #TO DO:
 #
-#COMMIT: clean up code for workshop
+#COMMIT: clean up and fixing sampling
 #
 #################################################################################################
 
@@ -35,10 +35,9 @@ library(sphet) #contains spreg, spatial regression modeling
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
-#library(gdata) #read xls, dbf etc., not recently updated but useful
+library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
-#library(gstat) #spatial interpolation and kriging methods
 library(readxl) #functionalities to read in excel type data
 library(psych) #pca/eigenvector decomposition functionalities
 library(sf) #spatial objects and functionalities
@@ -48,6 +47,7 @@ library(ROCR) # ROCR general for data.frame
 
 ###### Functions used in this script
 
+#This function creates an output directory
 create_dir_fun <- function(outDir,out_suffix=NULL){
   #if out_suffix is not null then append out_suffix string
   if(!is.null(out_suffix)){
@@ -63,9 +63,15 @@ create_dir_fun <- function(outDir,out_suffix=NULL){
 
 #####  Parameters and argument set up ###########
 
-#Separate inputs and outputs directories
-in_dir_var <- "data"
-out_dir <- "."
+#Separate inputs and outputs directories, change paths to your local disk
+
+#On docker:
+#in_dir_var <- "data"
+#out_dir <- "."
+
+#Local path:
+in_dir_var <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/data"
+out_dir <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/outputs"
 
 ### General parameters
 
@@ -73,7 +79,7 @@ out_dir <- "."
 CRS_reg <- "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
 file_format <- ".tif" #raster output format 
 NA_flag_val <- -9999 # NA value assigned to output raster
-out_suffix <-"exercise4_03282018" #output suffix for the files and ouptu folder #PARAM 8
+out_suffix <-"exercise4_02132019" #output suffix for the files and output folder
 create_out_dir_param=TRUE # if TRUE, a output dir using output suffix will be created
 method_proj_val <- "bilinear" # method option for the reprojection and resampling 
 gdal_installed <- TRUE #if TRUE, GDAL is used to generate distance files
