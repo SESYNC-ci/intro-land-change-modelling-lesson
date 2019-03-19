@@ -498,7 +498,7 @@ write.table(variables_out_df,
             row.names=F)
 
 ###############
-###### Step 5: Model assessment with ROC
+###### Step 4: Model assessment with ROC
 
 ## We use the TOC package since it allows for the use of raster layers.
 
@@ -545,5 +545,5 @@ slot(toc_rast_testing,"AUC") #this is the AUC from TOC for the logistic modeling
 
 ##TOC AUC Difference between training and testing:
 slot(toc_rast_training,"AUC") - slot(toc_rast_testing,"AUC") #this is the AUC from ROC for the logistic modeling
-S
+
 ###############################  End of script  #####################################
