@@ -66,12 +66,12 @@ create_dir_fun <- function(outDir,out_suffix=NULL){
 #Separate inputs and outputs directories, change paths to your local disk
 
 #On docker:
-#in_dir_var <- "data"
-#out_dir <- "."
+in_dir_var <- "data"
+out_dir <- "."
 
 #Local path:
-in_dir_var <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/data"
-out_dir <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/outputs"
+#in_dir_var <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/data"
+#out_dir <- "/nfs/bparmentier-data/Data/workshop_spatial/sesync2019_geospatial_workshop/Exercise_4/outputs"
 
 ### General parameters
 
