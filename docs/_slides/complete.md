@@ -1,7 +1,5 @@
 ---
-excerpt: Land Use and Land Cover Change
-editor_options: 
-  chunk_output_type: console
+excerpt: LU/LC Change
 ---
 
 
@@ -28,368 +26,33 @@ editor_options:
 
 library(sp) # spatial/geographfic objects and functions
 library(rgdal) #GDAL/OGR binding for R with functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-rgdal: version: 1.4-3, (SVN revision 828)
- Geospatial Data Abstraction Library extensions to R successfully loaded
- Loaded GDAL runtime: GDAL 2.1.3, released 2017/20/01
- Path to GDAL shared files: /usr/share/gdal/2.1
- GDAL binary built with GEOS: TRUE 
- Loaded PROJ.4 runtime: Rel. 4.9.2, 08 September 2015, [PJ_VERSION: 492]
- Path to PROJ.4 shared files: (autodetected)
- Linking to sp version: 1.3-1 
-~~~
-{:.output}
-
-
-~~~r
 library(spdep) #spatial analyses operations, functions etc.
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Loading required package: Matrix
-~~~
-{:.output}
-
-
-~~~r
 library(gtools) # contains mixsort and other useful functions
 library(maptools) # tools to manipulate spatial data
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Checking rgeos availability: TRUE
-~~~
-{:.output}
-
-
-~~~r
 library(parallel) # parallel computation, part of base package no
 library(rasterVis) # raster visualization operations
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Loading required package: raster
-~~~
-{:.output}
-
-
-~~~
-Loading required package: lattice
-~~~
-{:.output}
-
-
-~~~
-Loading required package: latticeExtra
-~~~
-{:.output}
-
-
-~~~
-Loading required package: RColorBrewer
-~~~
-{:.output}
-
-
-~~~r
 library(raster) # raster functionalities
 library(forecast) #ARIMA forecasting 
 library(xts) #extension for time series object and analyses
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Loading required package: zoo
-~~~
-{:.output}
-
-
-~~~
-
-Attaching package: 'zoo'
-~~~
-{:.output}
-
-
-~~~
-The following objects are masked from 'package:base':
-
-    as.Date, as.Date.numeric
-~~~
-{:.output}
-
-
-~~~r
 library(zoo) # time series object and analysis
 library(lubridate) # dates functionality
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-
-Attaching package: 'lubridate'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:base':
-
-    date
-~~~
-{:.output}
-
-
-~~~r
 library(colorRamps) #contains matlab.like color palette
 library(rgeos) #contains topological operations
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-rgeos version: 0.4-2, (SVN revision 581)
- GEOS runtime version: 3.5.1-CAPI-1.9.1 
- Linking to sp version: 1.3-1 
- Polygon checking: TRUE 
-~~~
-{:.output}
-
-
-~~~r
 library(sphet) #contains spreg, spatial regression modeling
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-
-Attaching package: 'sphet'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:raster':
-
-    distance
-~~~
-{:.output}
-
-
-~~~r
 library(BMS) #contains hex2bin and bin2hex, Bayesian methods
 library(bitops) # function for bitwise operations
 library(foreign) # import datasets from SAS, spss, stata and other sources
 #library(gdata) #read xls, dbf etc., not recently updated but useful
 library(classInt) #methods to generate class limits
 library(plyr) #data wrangling: various operations for splitting, combining data
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-
-Attaching package: 'plyr'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:lubridate':
-
-    here
-~~~
-{:.output}
-
-
-~~~r
 #library(gstat) #spatial interpolation and kriging methods
 library(readxl) #functionalities to read in excel type data
 library(psych) #pca/eigenvector decomposition functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-
-Attaching package: 'psych'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:gtools':
-
-    logit
-~~~
-{:.output}
-
-
-~~~r
 library(sf) #spatial objects and functionalities
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Linking to GEOS 3.5.1, GDAL 2.1.3, PROJ 4.9.2
-~~~
-{:.output}
-
-
-~~~r
 library(plotrix) #various graphic functions e.g. draw.circle
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-
-Attaching package: 'plotrix'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:psych':
-
-    rescale
-~~~
-{:.output}
-
-
-~~~r
 library(TOC) # TOC and ROC for raster images
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
-
-
-~~~
-Loading required package: bit
-~~~
-{:.output}
-
-
-~~~
-Attaching package bit
-~~~
-{:.output}
-
-
-~~~
-package:bit (c) 2008-2012 Jens Oehlschlaegel (GPL-2)
-~~~
-{:.output}
-
-
-~~~
-creators: bit bitwhich
-~~~
-{:.output}
-
-
-~~~
-coercion: as.logical as.integer as.bit as.bitwhich which
-~~~
-{:.output}
-
-
-~~~
-operator: ! & | xor != ==
-~~~
-{:.output}
-
-
-~~~
-querying: print length any all min max range sum summary
-~~~
-{:.output}
-
-
-~~~
-bit access: length<- [ [<- [[ [[<-
-~~~
-{:.output}
-
-
-~~~
-for more help type ?bit
-~~~
-{:.output}
-
-
-~~~
-
-Attaching package: 'bit'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:psych':
-
-    keysort
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:base':
-
-    xor
-~~~
-{:.output}
-
-
-~~~r
 library(ROCR) # ROCR general for data.frame
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
 
-
-~~~
-Loading required package: gplots
-~~~
-{:.output}
-
-
-~~~
-
-Attaching package: 'gplots'
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:plotrix':
-
-    plotCI
-~~~
-{:.output}
-
-
-~~~
-The following object is masked from 'package:stats':
-
-    lowess
-~~~
-{:.output}
-
-
-~~~r
 ###### Functions used in this script
 
 create_dir_fun <- function(outDir,out_suffix=NULL){
@@ -434,7 +97,15 @@ infile_land_cover_date3 <- "agg_3_r_nlcd2011_Houston.tif"
 
 infile_name_nlcd_legend <- "nlcd_legend.txt"
 infile_name_nlcd_classification_system <- "classification_system_nlcd_legend.xlsx"
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+
+<p></p>
+
+
+
+~~~r
 ######################### START SCRIPT ###############################
 
 ## First create an output directory to separate inputs and outputs
@@ -450,7 +121,15 @@ if(create_out_dir_param==TRUE){
 }else{
   setwd(out_dir) #use previoulsy defined directory
 }
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+
+<p></p>
+
+
+
+~~~r
 ###########################################
 ### PART I: READ AND VISUALIZE DATA #######
 
@@ -479,13 +158,22 @@ head(lc_legend_df) # Inspect data
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 plot(r_lc_date2) # View NLCD 2006, we will need to add the legend use the appropriate palette!!
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-1.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-4-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ### Let's add legend and examine existing land cover categories
 
 freq_tb_date2 <- freq(r_lc_date2)
@@ -506,6 +194,10 @@ head(freq_tb_date2) #view first 5 rows, note this is a matrix object.
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 ### Let's generate a palette from the NLCD legend information to view the existing land cover for 2006.
 names(lc_legend_df)
@@ -522,6 +214,10 @@ names(lc_legend_df)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 dim(lc_legend_df) #contains a lot of empty rows
 ~~~
@@ -532,6 +228,10 @@ dim(lc_legend_df) #contains a lot of empty rows
 [1] 256   7
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -553,9 +253,14 @@ barplot(c(1,1),
         names.arg=c("Open water",	"Developed, High Intensity"),las=1)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-2.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-8-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ### Let's generate a color for all the land cover categories by using lapply and function
 n_cat <- nrow(lc_legend_df)
 lc_col_palette <- lapply(1:n_cat,
@@ -578,9 +283,14 @@ levelplot(r_lc_date2,
           main = "NLCD 2006")
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-3.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-9-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ################################################
 ###  PART II : Analyze change and transitions
 
@@ -609,6 +319,10 @@ head(lc_system_nlcd_df) #inspect data
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 ### Let's identify existing cover and compute change:
 r_stack_nlcd <- stack(r_lc_date1,r_lc_date2)
@@ -630,6 +344,10 @@ head(freq_tb_nlcd)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 dim(lc_system_nlcd_df) # We have categories that are not relevant to the study area and time period.
 ~~~
@@ -640,6 +358,10 @@ dim(lc_system_nlcd_df) # We have categories that are not relevant to the study a
 [1] 20  5
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -655,6 +377,10 @@ dim(lc_system_nlcd_df) # Now 15 land categories instead of 20.
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 ### Selectet relevant columns for the reclassification
 rec_df <- lc_system_nlcd_df[,c(2,1)]
@@ -664,9 +390,14 @@ r_date2_rec <- subs(r_lc_date2,rec_df,by="id_l2","id_l1")
 plot(r_date1_rec)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-4.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-14-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 rec_xtab_df <- crosstab(r_date1_rec,r_date2_rec,long=T)
 names(rec_xtab_df) <- c("2001","2011","freq")
 
@@ -678,13 +409,17 @@ head(rec_xtab_df)
 ~~~
   2001 2011  freq
 1    1    1 17285
-2    2    1     7
-3    3    1   231
-4    4    1    76
-5    5    1    21
-6    7    1    73
+2    1    2    74
+3    1    3   176
+4    1    4     8
+5    1    5    34
+6    1    7    95
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -694,9 +429,13 @@ dim(rec_xtab_df) #9*9 possible transitions if we include NA values
 
 
 ~~~
-[1] 81  3
+[1] 64  3
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -708,88 +447,75 @@ print(rec_xtab_df) # View the full table
 ~~~
    2001 2011   freq
 1     1    1  17285
-2     2    1      7
-3     3    1    231
-4     4    1     76
-5     5    1     21
-6     7    1     73
-7     8    1    306
-8     9    1    302
-9  <NA>    1    103
-10    1    2     74
-11    2    2 325161
-12    3    2   1111
-13    4    2  10115
-14    5    2   1364
-15    7    2   3243
-16    8    2  12540
-17    9    2   3987
-18 <NA>    2   7702
-19    1    3    176
-20    2    3     10
-21    3    3   2815
-22    4    3    386
-23    5    3    232
-24    7    3    145
-25    8    3   1929
-26    9    3    314
-27 <NA>    3     90
-28    1    4      8
-29    2    4     40
-30    3    4     10
-31    4    4  77877
-32    5    4    192
-33    7    4     27
-34    8    4     48
-35    9    4     41
-36 <NA>    4    242
-37    1    5     34
-38    2    5     14
-39    3    5     70
-40    4    5    807
-41    5    5  13782
-42    7    5    752
-43    8    5    264
-44    9    5     87
-45 <NA>    5    186
-46    1    7     95
-47    2    7     32
-48    3    7    115
-49    4    7    996
-50    5    7    452
-51    7    7  16967
-52    8    7    411
-53    9    7     91
-54 <NA>    7    213
-55    1    8      3
-56    2    8     17
-57    3    8      7
-58    4    8    127
-59    5    8     37
-60    7    8     14
-61    8    8 154887
-62    9    8    110
-63 <NA>    8     83
-64    1    9     38
-65    2    9     19
-66    3    9     51
-67    4    9    116
-68    5    9     11
-69    7    9     19
-70    8    9     52
-71    9    9  58478
-72 <NA>    9    145
-73    1 <NA>     87
-74    2 <NA>   5753
-75    3 <NA>    130
-76    4 <NA>   1654
-77    5 <NA>    271
-78    7 <NA>    516
-79    8 <NA>   1673
-80    9 <NA>    691
-81 <NA> <NA>  32745
+2     1    2     74
+3     1    3    176
+4     1    4      8
+5     1    5     34
+6     1    7     95
+7     1    8      3
+8     1    9     38
+9     2    1      7
+10    2    2 325161
+11    2    3     10
+12    2    4     40
+13    2    5     14
+14    2    7     32
+15    2    8     17
+16    2    9     19
+17    3    1    231
+18    3    2   1111
+19    3    3   2815
+20    3    4     10
+21    3    5     70
+22    3    7    115
+23    3    8      7
+24    3    9     51
+25    4    1     76
+26    4    2  10115
+27    4    3    386
+28    4    4  77877
+29    4    5    807
+30    4    7    996
+31    4    8    127
+32    4    9    116
+33    5    1     21
+34    5    2   1364
+35    5    3    232
+36    5    4    192
+37    5    5  13782
+38    5    7    452
+39    5    8     37
+40    5    9     11
+41    7    1     73
+42    7    2   3243
+43    7    3    145
+44    7    4     27
+45    7    5    752
+46    7    7  16967
+47    7    8     14
+48    7    9     19
+49    8    1    306
+50    8    2  12540
+51    8    3   1929
+52    8    4     48
+53    8    5    264
+54    8    7    411
+55    8    8 154887
+56    8    9     52
+57    9    1    302
+58    9    2   3987
+59    9    3    314
+60    9    4     41
+61    9    5     87
+62    9    7     91
+63    9    8    110
+64    9    9  58478
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -799,9 +525,13 @@ which.max(rec_xtab_df$freq)
 
 
 ~~~
-[1] 11
+[1] 10
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -811,10 +541,14 @@ rec_xtab_df[11,] # Note the most important transition is persistence!!
 
 
 ~~~
-   2001 2011   freq
-11    2    2 325161
+   2001 2011 freq
+11    2    3   10
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -830,6 +564,10 @@ class(rec_xtab_df)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 is.na(rec_xtab_df$freq)
 ~~~
@@ -842,11 +580,13 @@ is.na(rec_xtab_df$freq)
 [23] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 [34] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 [45] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-[56] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-[67] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
-[78] FALSE FALSE FALSE FALSE
+[56] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -858,14 +598,18 @@ head(rec_xtab_df_ranked) # Unsurprsingly, top transitions are persistence catego
 
 ~~~
    2001 2011   freq
-11    2    2 325161
-61    8    8 154887
-31    4    4  77877
-71    9    9  58478
-81 <NA> <NA>  32745
+10    2    2 325161
+55    8    8 154887
+28    4    4  77877
+64    9    9  58478
 1     1    1  17285
+46    7    7  16967
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -894,6 +638,10 @@ head(lc_df) # Quickly examine the output
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 ### Add relevant categories
 lc_df <- merge(lc_df,label_legend_df,by.x="value",by.y="ID",all.y=F)
@@ -915,22 +663,36 @@ head(lc_df) # Note the overall cahnge
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 #### Now visualize the overall land cover changes
 barplot(lc_df$diff,names.arg=lc_df$name,las=2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-5.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-25-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 total_val  <- sum(lc_df$date1)
 lc_df$perc_change <- 100*lc_df$diff/total_val 
 barplot(lc_df$perc_change,names.arg=lc_df$name,las=2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-6.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-26-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ### Create a change image to map all pixels that transitioned to the developed category:  
 
 r_cat2 <- r_date2_rec==2 # developed on date 2
@@ -940,11 +702,24 @@ r_change <- r_cat2 * r_not_cat2 #mask
 plot(r_change,main="Land transitions to developed over 2001-2011")
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-7.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-27-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 change_tb <- freq(r_change) #Find out how many pixels transitions to developed
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+
+<p></p>
+
+
+
+~~~r
 #####################################
 ############# PART III: Process and Prepare variables for land change modeling ##############
 
@@ -962,9 +737,14 @@ r_cat2<- r_date1_rec==2 #developed in 2001
 plot(r_cat2)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-8.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-29-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 cat_bool_fname <- "developed_2001.tif" #input for the distance to road computation
 writeRaster(r_cat2,filename = cat_bool_fname,overwrite=T)
 
@@ -973,9 +753,14 @@ r_roads <- raster(file.path(in_dir_var,roads_fname))
 plot(r_roads,colNA="black")
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-9.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-30-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 res(r_roads)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -987,6 +772,10 @@ res(r_roads)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 #### Aggregate to match the NLCD data resolution
 r_roads_90m <- aggregate(r_roads,
@@ -995,16 +784,26 @@ r_roads_90m <- aggregate(r_roads,
 plot(r_roads_90m)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-10.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-32-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 r_roads_bool <- r_roads_90m > 0
 plot(r_roads_bool)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-11.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-33-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 roads_bool_fname <- "roads_bool.tif" #input for the distance to road computation
 writeRaster(r_roads_bool,filename = roads_bool_fname,overwrite=T)
 
@@ -1052,15 +851,25 @@ if(gdal_installed==TRUE){
 plot(r_developed_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-12.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-34-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 plot(r_roads_distance) #This is at 90m.
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-13.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-35-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 #Now rescale the distance...
 min_val <- cellStats(r_roads_distance,min) 
 max_val <- cellStats(r_roads_distance,max)
@@ -1085,6 +894,10 @@ projection(r_elevation) # This is not in the same projection as the study area.
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 r_elevation_reg <- projectRaster(from= r_elevation, #input raster to reproject
                                  to= r_date1_rec, #raster with desired extent, resolution and projection system
@@ -1100,9 +913,14 @@ r_date1_rec_masked <- mask(r_date1_rec,r_mask,maskvalue=1)
 plot(r_date1_rec_masked)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-14.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-37-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 #####################################
 ############# PART IV: Run Model and perform assessment ##############
 
@@ -1114,9 +932,14 @@ r_mask <- (r_date1_rec!=2)*(r_date1_rec!=1)
 plot(r_mask)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-15.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-38-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 NAvalue(r_mask) <- 0 
 
 ### Read in focus area for the modeling:
@@ -1127,9 +950,14 @@ r_mask[r_mask==0]<-NA
 plot(r_mask)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-16.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-39-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ### Check the number of NA and pixels in the study area:
 tb_study_area <- freq(r_mask)
 print(tb_study_area)
@@ -1145,6 +973,10 @@ print(tb_study_area)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 ## Generate dataset for Harris county
 r_variables <- stack(r_change,r_date1_rec_masked,r_slope,r_roads_dist,r_developed_dist)
@@ -1156,23 +988,43 @@ NAvalue(r_variables) <- NA_flag_val
 plot(r_variables)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-17.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-41-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ### Check for consistency in mask:
 NA_freq_tb <- freq(r_variables,value=NA,merge=T)
 ### Notice that the number of NA is not consistent.
 ### Let's recombine all NA for consstencies:
 plot(r_variables)
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-42-1.png)
+{:.captioned}
+
+<p></p>
+
+
+
+~~~r
 r_NA <- r_variables > -1 #There are no negative values in the raster stack
 
 r_valid_pixels <- overlay(r_NA,fun=sum)
 plot(r_valid_pixels)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-18.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-43-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 dim(r_NA)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -1182,6 +1034,10 @@ dim(r_NA)
 [1] 789 965   5
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -1196,6 +1052,10 @@ freq(r_valid_pixels)
 [2,]    NA 545948
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -1219,6 +1079,10 @@ dim(variables_df)
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 variables_df$land_cover <- as.factor(variables_df$land_cover)
 variables_df$change <- as.factor(variables_df$change)
@@ -1237,7 +1101,15 @@ names(variables_df)
 
 ~~~r
 #names(variables_df) <- c("change","land_cover","elevation","roads_dist","developed_dist")
+~~~
+{:.text-document title="{{ site.handouts[0] }}"}
 
+
+<p></p>
+
+
+
+~~~r
 mod_glm <- glm(change ~ land_cover + slope + roads_dist + developed_dist, 
            data=variables_df , family=binomial())
 ~~~
@@ -1274,6 +1146,10 @@ Null Deviance:	    142300
 Residual Deviance: 112900 	AIC: 112900
 ~~~
 {:.output}
+
+
+<p></p>
+
 
 
 ~~~r
@@ -1317,20 +1193,34 @@ Number of Fisher Scoring iterations: 8
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 r_p <- predict(r_variables, mod_glm, type="response")
 plot(r_p)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-19.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-50-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 histogram(r_p)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-20.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-51-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 ###############
 ###### Step 3: Model assessment with ROC
 
@@ -1342,21 +1232,36 @@ r_change_harris <- subset(r_variables,"change")
 plot(r_change_harris) # boolean reference variable
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-21.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-52-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 plot(r_mask) # mask for relevant observation
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-22.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-53-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 plot(r_p) # index variable to assess
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-23.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-54-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 roc_rast <- ROC(index=r_p, 
                   boolean=r_change_harris, 
                   mask=r_mask,
@@ -1365,9 +1270,14 @@ roc_rast <- ROC(index=r_p,
 plot(roc_rast)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-24.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-55-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 slot(roc_rast,"AUC") #this is the AUC from ROC for the logistic modeling
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -1379,6 +1289,10 @@ slot(roc_rast,"AUC") #this is the AUC from ROC for the logistic modeling
 {:.output}
 
 
+<p></p>
+
+
+
 ~~~r
 toc_rast <- TOC(index=r_p, 
                   boolean=r_change_harris, 
@@ -1388,9 +1302,14 @@ toc_rast <- TOC(index=r_p,
 plot(toc_rast)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
-![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-1-25.png)
+![ ]({{ site.baseurl }}/images/complete/unnamed-chunk-57-1.png)
+{:.captioned}
 
-{:.captioned}~~~r
+<p></p>
+
+
+
+~~~r
 slot(toc_rast,"AUC") #this is the AUC from TOC for the logistic modeling
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
