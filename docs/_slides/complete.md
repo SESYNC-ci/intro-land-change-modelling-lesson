@@ -1087,6 +1087,7 @@ dim(variables_df)
 variables_df$land_cover <- as.factor(variables_df$land_cover)
 variables_df$change <- as.factor(variables_df$change)
 
+#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developed_dist")
 names(variables_df)
 ~~~
 {:.text-document title="{{ site.handouts[0] }}"}
@@ -1097,12 +1098,6 @@ names(variables_df)
 [5] "developed_dist"
 ~~~
 {:.output}
-
-
-~~~r
-#names(variables_df) <- c("change","land_cover","elevation","roads_dist","developed_dist")
-~~~
-{:.text-document title="{{ site.handouts[0] }}"}
 
 
 <p></p>
