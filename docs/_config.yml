@@ -11,6 +11,7 @@ handouts:
   - data/nlcd_legend.txt
   - data/r_roads_Harris.tif
   - data/srtm_Houston_area_90m.tif
+  - data/r_variables_harris_county_exercise4_02072019.txt
   - data/README.md
 
 tag: v0.0
