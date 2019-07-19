@@ -1,42 +1,17 @@
-# Site
+# Build Configuration
 
-title: Introduction to Land Change Modelling
-handouts: 
-  - worksheet.R
-  - data/agg_3_r_nlcd2001_Houston.tif
-  - data/agg_3_r_nlcd2006_Houston.tif
-  - data/agg_3_r_nlcd2011_Houston.tif
-  - data/classification_system_nlcd_legend.xlsx
-  - data/harris_county_mask.tif
-  - data/nlcd_legend.txt
-  - data/r_roads_Harris.tif
-  - data/srtm_Houston_area_90m.tif
-  - data/r_variables_harris_county_exercise4_02072019.txt
-  - data/README.md
-
-tag: v0.0
-lesson: 2
-instructor: Benoit Parmentier
-authors: 
-  - Benoit Parmentier
-
-# Slides
-
-slide_sorter:
-  - complete
-
-#####################################
-# Only modify content above or risk #
-# merge conflicts with upstream.    #
-#####################################
-
-# Style
-
-styleurl: https://cdn.rawgit.com/sesync-ci/lesson-style/v2.0/docs
-reveal: https://cdn.rawgit.com/hakimel/reveal.js/3.5.0
-
-# Jekyll
-
-markdown: kramdown
+markdown: kramdown 
 collections:
-  - slides
+  slides:
+    output: false
+  views:
+    output: true
+    permalink: /:name/
+  archive:
+    output: true
+    permalink: /:year/:month/:day/:title:output_ext
+
+# Asset Location
+
+imageurl: /assets/images/
+styleurl: /assets/css/
