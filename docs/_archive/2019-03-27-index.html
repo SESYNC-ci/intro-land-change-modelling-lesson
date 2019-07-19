@@ -1,0 +1,1053 @@
+---
+---
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction to Land Change Modelling</title>
+<meta name="description" content="">
+<link rel="canonical"
+  href="http://cyberhelp.sesync.org/intro-land-change-modelling-lesson/course/archive.html">
+<link href="https://cdn.jsdelivr.net/gh/sesync-ci/lesson-style@v2.0/docs/css/default.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/sesync-ci/lesson-style@v2.0/docs/css/syntax.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/sesync-ci/lesson-style@v2.0/docs/css/static.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+    
+
+  </head>
+  <body>
+    <div class="page-content">
+      <div class="wrapper">
+        
+        
+<h1 style="text-transform: none;" id="introduction-to-land-change-modelling">Introduction to Land Change Modelling</h1>
+
+<p>Lesson 2 with <em>Benoit Parmentier</em></p>
+
+<nav id="ToC">
+
+  <ul>
+    <li><a href="#/slides/complete">LU/LC Change</a></li>
+  </ul>
+</nav>
+
+<hr />
+<p><a name="/slides/complete"></a></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">####################################   Land Use and Land Cover Change   #######################################</span><span class="w">
+</span><span class="c1">############################  Analyze Land Cover change in Houston  #######################################</span><span class="w">
+</span><span class="c1">#This script performs analyses for the Exercise 4 of the Geospatial Short Course using aggregated NLCD values.</span><span class="w">
+</span><span class="c1">#The goal is to assess land cover change using two land cover maps in the Houston areas.</span><span class="w">
+</span><span class="c1">#Additional datasets are provided for the land cover change modeling. A model is built for Harris county.</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1">#AUTHORS: Benoit Parmentier                                             </span><span class="w">
+</span><span class="c1">#DATE CREATED: 03/16/2018 </span><span class="w">
+</span><span class="c1">#DATE MODIFIED: 03/28/2018</span><span class="w">
+</span><span class="c1">#Version: 1</span><span class="w">
+</span><span class="c1">#PROJECT: SESYNC and AAG 2018 Geospatial Short Course </span><span class="w">
+</span><span class="c1">#TO DO:</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1">#COMMIT: clean up code for workshop</span><span class="w">
+</span><span class="c1">#</span><span class="w">
+</span><span class="c1">#################################################################################################</span><span class="w">
+
+</span><span class="c1">###Loading R library and packages                                                      </span><span class="w">
+
+</span><span class="n">library</span><span class="p">(</span><span class="n">sp</span><span class="p">)</span><span class="w"> </span><span class="c1"># spatial/geographfic objects and functions</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rgdal</span><span class="p">)</span><span class="w"> </span><span class="c1">#GDAL/OGR binding for R with functionalities</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">spdep</span><span class="p">)</span><span class="w"> </span><span class="c1">#spatial analyses operations, functions etc.</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">gtools</span><span class="p">)</span><span class="w"> </span><span class="c1"># contains mixsort and other useful functions</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">maptools</span><span class="p">)</span><span class="w"> </span><span class="c1"># tools to manipulate spatial data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">parallel</span><span class="p">)</span><span class="w"> </span><span class="c1"># parallel computation, part of base package no</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rasterVis</span><span class="p">)</span><span class="w"> </span><span class="c1"># raster visualization operations</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">raster</span><span class="p">)</span><span class="w"> </span><span class="c1"># raster functionalities</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">forecast</span><span class="p">)</span><span class="w"> </span><span class="c1">#ARIMA forecasting </span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">xts</span><span class="p">)</span><span class="w"> </span><span class="c1">#extension for time series object and analyses</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">zoo</span><span class="p">)</span><span class="w"> </span><span class="c1"># time series object and analysis</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">lubridate</span><span class="p">)</span><span class="w"> </span><span class="c1"># dates functionality</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">colorRamps</span><span class="p">)</span><span class="w"> </span><span class="c1">#contains matlab.like color palette</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">rgeos</span><span class="p">)</span><span class="w"> </span><span class="c1">#contains topological operations</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sphet</span><span class="p">)</span><span class="w"> </span><span class="c1">#contains spreg, spatial regression modeling</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">BMS</span><span class="p">)</span><span class="w"> </span><span class="c1">#contains hex2bin and bin2hex, Bayesian methods</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">bitops</span><span class="p">)</span><span class="w"> </span><span class="c1"># function for bitwise operations</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">foreign</span><span class="p">)</span><span class="w"> </span><span class="c1"># import datasets from SAS, spss, stata and other sources</span><span class="w">
+</span><span class="c1">#library(gdata) #read xls, dbf etc., not recently updated but useful</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">classInt</span><span class="p">)</span><span class="w"> </span><span class="c1">#methods to generate class limits</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">plyr</span><span class="p">)</span><span class="w"> </span><span class="c1">#data wrangling: various operations for splitting, combining data</span><span class="w">
+</span><span class="c1">#library(gstat) #spatial interpolation and kriging methods</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">readxl</span><span class="p">)</span><span class="w"> </span><span class="c1">#functionalities to read in excel type data</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">psych</span><span class="p">)</span><span class="w"> </span><span class="c1">#pca/eigenvector decomposition functionalities</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">sf</span><span class="p">)</span><span class="w"> </span><span class="c1">#spatial objects and functionalities</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">plotrix</span><span class="p">)</span><span class="w"> </span><span class="c1">#various graphic functions e.g. draw.circle</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">TOC</span><span class="p">)</span><span class="w"> </span><span class="c1"># TOC and ROC for raster images</span><span class="w">
+</span><span class="n">library</span><span class="p">(</span><span class="n">ROCR</span><span class="p">)</span><span class="w"> </span><span class="c1"># ROCR general for data.frame</span><span class="w">
+
+</span><span class="c1">###### Functions used in this script</span><span class="w">
+
+</span><span class="n">create_dir_fun</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="k">function</span><span class="p">(</span><span class="n">outDir</span><span class="p">,</span><span class="n">out_suffix</span><span class="o">=</span><span class="kc">NULL</span><span class="p">){</span><span class="w">
+  </span><span class="c1">#if out_suffix is not null then append out_suffix string</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="nf">is.null</span><span class="p">(</span><span class="n">out_suffix</span><span class="p">)){</span><span class="w">
+    </span><span class="n">out_name</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"output_"</span><span class="p">,</span><span class="n">out_suffix</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">)</span><span class="w">
+    </span><span class="n">outDir</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file.path</span><span class="p">(</span><span class="n">outDir</span><span class="p">,</span><span class="n">out_name</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="c1">#create if does not exists</span><span class="w">
+  </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">file.exists</span><span class="p">(</span><span class="n">outDir</span><span class="p">)){</span><span class="w">
+    </span><span class="n">dir.create</span><span class="p">(</span><span class="n">outDir</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="nf">return</span><span class="p">(</span><span class="n">outDir</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="c1">#####  Parameters and argument set up ###########</span><span class="w">
+
+</span><span class="c1">#Separate inputs and outputs directories</span><span class="w">
+</span><span class="n">in_dir_var</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"data"</span><span class="w">
+</span><span class="n">out_dir</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"."</span><span class="w">
+
+</span><span class="c1">### General parameters</span><span class="w">
+
+</span><span class="c1">#NLCD coordinate reference system: we will use this projection rather than TX.</span><span class="w">
+</span><span class="n">CRS_reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=23 +lon_0=-96 +x_0=0 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"</span><span class="w">
+</span><span class="n">file_format</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">".tif"</span><span class="w"> </span><span class="c1">#raster output format </span><span class="w">
+</span><span class="n">NA_flag_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">-9999</span><span class="w"> </span><span class="c1"># NA value assigned to output raster</span><span class="w">
+</span><span class="n">out_suffix</span><span class="w"> </span><span class="o">&lt;-</span><span class="s2">"lesson2"</span><span class="w"> </span><span class="c1">#output suffix for the files and ouptu folder #PARAM 8</span><span class="w">
+</span><span class="n">create_out_dir_param</span><span class="o">=</span><span class="kc">FALSE</span><span class="w"> </span><span class="c1"># if TRUE, a output dir using output suffix will be created</span><span class="w">
+</span><span class="n">method_proj_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"bilinear"</span><span class="w"> </span><span class="c1"># method option for the reprojection and resampling </span><span class="w">
+</span><span class="n">gdal_installed</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="kc">TRUE</span><span class="w"> </span><span class="c1">#if TRUE, GDAL is used to generate distance files</span><span class="w">
+
+</span><span class="c1">### Input data files</span><span class="w">
+</span><span class="n">rastername_county_harris</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"harris_county_mask.tif"</span><span class="w"> </span><span class="c1">#Region of interest: extent of Harris County</span><span class="w">
+</span><span class="n">elevation_fname</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"srtm_Houston_area_90m.tif"</span><span class="w"> </span><span class="c1">#SRTM elevation</span><span class="w">
+</span><span class="n">roads_fname</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"r_roads_Harris.tif"</span><span class="w"> </span><span class="c1">#Road count for Harris county</span><span class="w">
+
+</span><span class="c1">### Aggreagate NLCD input files</span><span class="w">
+</span><span class="n">infile_land_cover_date1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"agg_3_r_nlcd2001_Houston.tif"</span><span class="w">
+</span><span class="n">infile_land_cover_date2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"agg_3_r_nlcd2006_Houston.tif"</span><span class="w">
+</span><span class="n">infile_land_cover_date3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"agg_3_r_nlcd2011_Houston.tif"</span><span class="w">
+
+</span><span class="n">infile_name_nlcd_legend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"nlcd_legend.txt"</span><span class="w">
+</span><span class="n">infile_name_nlcd_classification_system</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"classification_system_nlcd_legend.xlsx"</span><span class="w">
+</span></code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">######################### START SCRIPT ###############################</span><span class="w">
+
+</span><span class="c1">## First create an output directory to separate inputs and outputs</span><span class="w">
+
+</span><span class="k">if</span><span class="p">(</span><span class="nf">is.null</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)){</span><span class="w">
+  </span><span class="n">out_dir</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">dirname</span><span class="p">(</span><span class="n">in_dir</span><span class="p">)</span><span class="w"> </span><span class="c1">#output will be created in the input dir</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">out_suffix_s</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">out_suffix</span><span class="w"> </span><span class="c1">#can modify name of output suffix</span><span class="w">
+</span><span class="k">if</span><span class="p">(</span><span class="n">create_out_dir_param</span><span class="o">==</span><span class="kc">TRUE</span><span class="p">){</span><span class="w">
+  </span><span class="n">out_dir</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">create_dir_fun</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span><span class="n">out_suffix_s</span><span class="p">)</span><span class="w">
+  </span><span class="n">setwd</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="w">
+</span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w">
+  </span><span class="n">setwd</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="w"> </span><span class="c1">#use previoulsy defined directory</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">###########################################</span><span class="w">
+</span><span class="c1">### PART I: READ AND VISUALIZE DATA #######</span><span class="w">
+
+</span><span class="n">r_lc_date1</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">infile_land_cover_date1</span><span class="p">))</span><span class="w"> </span><span class="c1">#NLCD 2001 </span><span class="w">
+</span><span class="n">r_lc_date2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">infile_land_cover_date2</span><span class="p">))</span><span class="w"> </span><span class="c1">#NLCD 2006</span><span class="w">
+</span><span class="n">r_lc_date3</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">infile_land_cover_date2</span><span class="p">))</span><span class="w"> </span><span class="c1">#NLCD 2011</span><span class="w">
+
+</span><span class="n">lc_legend_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read.table</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">infile_name_nlcd_legend</span><span class="p">),</span><span class="w">
+                           </span><span class="n">stringsAsFactors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">F</span><span class="p">,</span><span class="w">
+                           </span><span class="n">sep</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># Inspect data</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  ID      COUNT Red Green Blue NLCD.2006.Land.Cover.Class Opacity
+1  0 7854240512   0     0    0               Unclassified     255
+2  1          0   0   249    0                                255
+3  2          0   0     0    0                                255
+4  3          0   0     0    0                                255
+5  4          0   0     0    0                                255
+6  5          0   0     0    0                                255
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">)</span><span class="w"> </span><span class="c1"># View NLCD 2006, we will need to add the legend use the appropriate palette!!</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-4-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's add legend and examine existing land cover categories</span><span class="w">
+
+</span><span class="n">freq_tb_date2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">freq</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">)</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">freq_tb_date2</span><span class="p">)</span><span class="w"> </span><span class="c1">#view first 5 rows, note this is a matrix object.</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     value  count
+[1,]    11  18404
+[2,]    21  95347
+[3,]    22  93687
+[4,]    23 122911
+[5,]    24  53352
+[6,]    31   6097
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's generate a palette from the NLCD legend information to view the existing land cover for 2006.</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] "ID"                         "COUNT"                     
+[3] "Red"                        "Green"                     
+[5] "Blue"                       "NLCD.2006.Land.Cover.Class"
+[7] "Opacity"                   
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">)</span><span class="w"> </span><span class="c1">#contains a lot of empty rows</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 256   7
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">lc_legend_df</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">,</span><span class="n">COUNT</span><span class="o">&gt;</span><span class="m">0</span><span class="p">)</span><span class="w"> </span><span class="c1">#subset the data to remove unsured rows</span><span class="w">
+</span><span class="c1">### Generate a palette color from the input Red, Green and Blue information using RGB encoding:</span><span class="w">
+
+
+</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">rgb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Red</span><span class="p">,</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Green</span><span class="p">,</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Blue</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">","</span><span class="p">)</span><span class="w"> </span><span class="c1">#combine</span><span class="w">
+
+</span><span class="c1">### row 2 correspond to the "open water" category</span><span class="w">
+</span><span class="n">color_val_water</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rgb</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Red</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Green</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Blue</span><span class="p">[</span><span class="m">2</span><span class="p">],</span><span class="n">maxColorValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span><span class="p">)</span><span class="w">
+</span><span class="n">color_val_developed_high</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rgb</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Red</span><span class="p">[</span><span class="m">7</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Green</span><span class="p">[</span><span class="m">7</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Blue</span><span class="p">[</span><span class="m">7</span><span class="p">],</span><span class="n">maxColorValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span><span class="p">)</span><span class="w">
+
+</span><span class="n">lc_col_palette</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="n">color_val_water</span><span class="p">,</span><span class="n">color_val_developed_high</span><span class="p">)</span><span class="w">
+
+</span><span class="n">barplot</span><span class="p">(</span><span class="nf">c</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="m">1</span><span class="p">),</span><span class="w"> 
+        </span><span class="n">col</span><span class="o">=</span><span class="n">lc_col_palette</span><span class="p">,</span><span class="w">
+        </span><span class="n">main</span><span class="o">=</span><span class="s2">"Visualization of color palette for NLCD land cover"</span><span class="p">,</span><span class="w">
+        </span><span class="n">names.arg</span><span class="o">=</span><span class="nf">c</span><span class="p">(</span><span class="s2">"Open water"</span><span class="p">,</span><span class="w">	</span><span class="s2">"Developed, High Intensity"</span><span class="p">),</span><span class="n">las</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-8-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's generate a color for all the land cover categories by using lapply and function</span><span class="w">
+</span><span class="n">n_cat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">nrow</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">)</span><span class="w">
+</span><span class="n">lc_col_palette</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lapply</span><span class="p">(</span><span class="m">1</span><span class="o">:</span><span class="n">n_cat</span><span class="p">,</span><span class="w">
+                 </span><span class="n">FUN</span><span class="o">=</span><span class="k">function</span><span class="p">(</span><span class="n">i</span><span class="p">){</span><span class="n">rgb</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Red</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Green</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">Blue</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">maxColorValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span><span class="p">)})</span><span class="w">
+</span><span class="n">lc_col_palette</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">unlist</span><span class="p">(</span><span class="n">lc_col_palette</span><span class="p">)</span><span class="w">
+
+</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">palette</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lc_col_palette</span><span class="w">
+
+</span><span class="n">r_lc_date2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ratify</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">)</span><span class="w"> </span><span class="c1"># create a raster layer with categorical information</span><span class="w">
+</span><span class="n">rat</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">levels</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">)[[</span><span class="m">1</span><span class="p">]]</span><span class="w"> </span><span class="c1">#This is a data.frame with the categories present in the raster</span><span class="w">
+
+</span><span class="n">lc_legend_df_date2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">lc_legend_df</span><span class="p">,</span><span class="n">lc_legend_df</span><span class="o">$</span><span class="n">ID</span><span class="o">%in%</span><span class="w"> </span><span class="p">(</span><span class="n">rat</span><span class="p">[,</span><span class="m">1</span><span class="p">]))</span><span class="w"> </span><span class="c1">#find the land cover types present in date 2 (2006)</span><span class="w">
+</span><span class="n">rat</span><span class="o">$</span><span class="n">legend</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lc_legend_df_date2</span><span class="o">$</span><span class="n">NLCD.2006.Land.Cover.Class</span><span class="w"> </span><span class="c1">#assign it back in case it is missing</span><span class="w">
+</span><span class="n">levels</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rat</span><span class="w"> </span><span class="c1">#add the information to the raster layer</span><span class="w">
+
+</span><span class="c1">### Now generate a plot of land cover with the NLCD legend and palette</span><span class="w">
+</span><span class="n">levelplot</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">,</span><span class="w"> 
+          </span><span class="n">col.regions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lc_legend_df_date2</span><span class="o">$</span><span class="n">palette</span><span class="p">,</span><span class="w">
+          </span><span class="n">scales</span><span class="o">=</span><span class="nf">list</span><span class="p">(</span><span class="n">draw</span><span class="o">=</span><span class="kc">FALSE</span><span class="p">),</span><span class="w">
+          </span><span class="n">main</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"NLCD 2006"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-9-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">################################################</span><span class="w">
+</span><span class="c1">###  PART II : Analyze change and transitions</span><span class="w">
+
+</span><span class="c1">## As the plot shows for 2006, we have 15 land cover types. Analyzing such complex categories in terms of decreasse (loss), increase (gain), </span><span class="w">
+</span><span class="c1"># persistence in land cover will generate a large number of transitions (potential up to 15*15=225 transitions in this case!)</span><span class="w">
+
+</span><span class="c1">## To generalize the information, let's aggregate leveraging the hierachical nature of NLCD Anderson Classification system.</span><span class="w">
+
+</span><span class="n">lc_system_nlcd_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">read_xlsx</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">infile_name_nlcd_classification_system</span><span class="p">))</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">lc_system_nlcd_df</span><span class="p">)</span><span class="w"> </span><span class="c1">#inspect data</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code># A tibble: 6 x 5
+  id_l1 id_l2 name_l1  name_l2         `Classification Description`        
+  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;           &lt;chr&gt;                               
+1     1    11 Water    Open Water      Open Water- areas of open water, ge…
+2     1    12 Water    Perennial Ice/… Perennial Ice/Snow- areas character…
+3     2    21 Develop… Developed, Ope… Developed, Open Space- areas with a…
+4     2    22 Develop… Developed, Low… Developed, Low Intensity- areas wit…
+5     2    23 Develop… Developed, Med… Developed, Medium Intensity -areas …
+6     2    24 Develop… Developed High… Developed High Intensity-highly dev…
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's identify existing cover and compute change:</span><span class="w">
+</span><span class="n">r_stack_nlcd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">r_lc_date1</span><span class="p">,</span><span class="n">r_lc_date2</span><span class="p">)</span><span class="w">
+</span><span class="n">freq_tb_nlcd</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">freq</span><span class="p">(</span><span class="n">r_stack_nlcd</span><span class="p">,</span><span class="n">merge</span><span class="o">=</span><span class="nb">T</span><span class="p">))</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">freq_tb_nlcd</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  value agg_3_r_nlcd2001_Houston agg_3_r_nlcd2006_Houston
+1    11                    17800                    18404
+2    21                    92135                    95347
+3    22                    89035                    93687
+4    23                   102053                   122911
+5    24                    47830                    53352
+6    31                     4540                     6097
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">lc_system_nlcd_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># We have categories that are not relevant to the study area and time period.</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 20  5
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">lc_system_nlcd_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">lc_system_nlcd_df</span><span class="p">,</span><span class="n">id_l2</span><span class="o">%in%</span><span class="n">freq_tb_nlcd</span><span class="o">$</span><span class="n">value</span><span class="w"> </span><span class="p">)</span><span class="w"> 
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">lc_system_nlcd_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># Now 15 land categories instead of 20.</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 15  5
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Selectet relevant columns for the reclassification</span><span class="w">
+</span><span class="n">rec_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lc_system_nlcd_df</span><span class="p">[,</span><span class="nf">c</span><span class="p">(</span><span class="m">2</span><span class="p">,</span><span class="m">1</span><span class="p">)]</span><span class="w">
+</span><span class="n">r_date1_rec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subs</span><span class="p">(</span><span class="n">r_lc_date1</span><span class="p">,</span><span class="n">rec_df</span><span class="p">,</span><span class="n">by</span><span class="o">=</span><span class="s2">"id_l2"</span><span class="p">,</span><span class="s2">"id_l1"</span><span class="p">)</span><span class="w">
+</span><span class="n">r_date2_rec</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subs</span><span class="p">(</span><span class="n">r_lc_date2</span><span class="p">,</span><span class="n">rec_df</span><span class="p">,</span><span class="n">by</span><span class="o">=</span><span class="s2">"id_l2"</span><span class="p">,</span><span class="s2">"id_l1"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_date1_rec</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-14-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">rec_xtab_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">crosstab</span><span class="p">(</span><span class="n">r_date1_rec</span><span class="p">,</span><span class="n">r_date2_rec</span><span class="p">,</span><span class="n">long</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"2001"</span><span class="p">,</span><span class="s2">"2011"</span><span class="p">,</span><span class="s2">"freq"</span><span class="p">)</span><span class="w">
+
+</span><span class="n">head</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  2001 2011  freq
+1    1    1 17285
+2    1    2    74
+3    1    3   176
+4    1    4     8
+5    1    5    34
+6    1    7    95
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="p">)</span><span class="w"> </span><span class="c1">#9*9 possible transitions if we include NA values</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 64  3
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># View the full table</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   2001 2011   freq
+1     1    1  17285
+2     1    2     74
+3     1    3    176
+4     1    4      8
+5     1    5     34
+6     1    7     95
+7     1    8      3
+8     1    9     38
+9     2    1      7
+10    2    2 325161
+11    2    3     10
+12    2    4     40
+13    2    5     14
+14    2    7     32
+15    2    8     17
+16    2    9     19
+17    3    1    231
+18    3    2   1111
+19    3    3   2815
+20    3    4     10
+21    3    5     70
+22    3    7    115
+23    3    8      7
+24    3    9     51
+25    4    1     76
+26    4    2  10115
+27    4    3    386
+28    4    4  77877
+29    4    5    807
+30    4    7    996
+31    4    8    127
+32    4    9    116
+33    5    1     21
+34    5    2   1364
+35    5    3    232
+36    5    4    192
+37    5    5  13782
+38    5    7    452
+39    5    8     37
+40    5    9     11
+41    7    1     73
+42    7    2   3243
+43    7    3    145
+44    7    4     27
+45    7    5    752
+46    7    7  16967
+47    7    8     14
+48    7    9     19
+49    8    1    306
+50    8    2  12540
+51    8    3   1929
+52    8    4     48
+53    8    5    264
+54    8    7    411
+55    8    8 154887
+56    8    9     52
+57    9    1    302
+58    9    2   3987
+59    9    3    314
+60    9    4     41
+61    9    5     87
+62    9    7     91
+63    9    8    110
+64    9    9  58478
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">which.max</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="o">$</span><span class="n">freq</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 10
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">rec_xtab_df</span><span class="p">[</span><span class="m">11</span><span class="p">,]</span><span class="w"> </span><span class="c1"># Note the most important transition is persistence!!</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   2001 2011 freq
+11    2    3   10
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's rank the transition:</span><span class="w">
+</span><span class="nf">class</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] "data.frame"
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="nf">is.na</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="o">$</span><span class="n">freq</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code> [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[12] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[23] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[34] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[45] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+[56] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">rec_xtab_df_ranked</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">rec_xtab_df</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">rec_xtab_df</span><span class="o">$</span><span class="n">freq</span><span class="p">,</span><span class="n">decreasing</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="p">]</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">rec_xtab_df_ranked</span><span class="p">)</span><span class="w"> </span><span class="c1"># Unsurprsingly, top transitions are persistence categories</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   2001 2011   freq
+10    2    2 325161
+55    8    8 154887
+28    4    4  77877
+64    9    9  58478
+1     1    1  17285
+46    7    7  16967
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Let's examine the overall change in categories rather than transitions</span><span class="w">
+
+</span><span class="n">label_legend_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">data.frame</span><span class="p">(</span><span class="n">ID</span><span class="o">=</span><span class="n">lc_system_nlcd_df</span><span class="o">$</span><span class="n">id_l1</span><span class="p">,</span><span class="n">name</span><span class="o">=</span><span class="n">lc_system_nlcd_df</span><span class="o">$</span><span class="n">name_l1</span><span class="p">)</span><span class="w">
+</span><span class="n">r_stack</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">r_date1_rec</span><span class="p">,</span><span class="n">r_date2_rec</span><span class="p">)</span><span class="w">
+
+</span><span class="n">lc_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">freq</span><span class="p">(</span><span class="n">r_stack</span><span class="p">,</span><span class="n">merge</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">lc_df</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"value"</span><span class="p">,</span><span class="s2">"date1"</span><span class="p">,</span><span class="s2">"date2"</span><span class="p">)</span><span class="w">
+</span><span class="n">lc_df</span><span class="o">$</span><span class="n">diff</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lc_df</span><span class="o">$</span><span class="n">date2</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">lc_df</span><span class="o">$</span><span class="n">date1</span><span class="w"> </span><span class="c1">#difference for each land cover categories over the 2001-2011 time period</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">lc_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># Quickly examine the output</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  value  date1  date2   diff
+1     1  17800  18404    604
+2     2 331053 365297  34244
+3     3   4540   6097   1557
+4     4  92154  78485 -13669
+5     5  16362  15996   -366
+6     7  21756  19372  -2384
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Add relevant categories</span><span class="w">
+</span><span class="n">lc_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">merge</span><span class="p">(</span><span class="n">lc_df</span><span class="p">,</span><span class="n">label_legend_df</span><span class="p">,</span><span class="n">by.x</span><span class="o">=</span><span class="s2">"value"</span><span class="p">,</span><span class="n">by.y</span><span class="o">=</span><span class="s2">"ID"</span><span class="p">,</span><span class="n">all.y</span><span class="o">=</span><span class="nb">F</span><span class="p">)</span><span class="w">
+</span><span class="n">lc_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">lc_df</span><span class="p">[</span><span class="o">!</span><span class="n">duplicated</span><span class="p">(</span><span class="n">lc_df</span><span class="p">),]</span><span class="w"> </span><span class="c1">#remove duplictates</span><span class="w">
+</span><span class="n">head</span><span class="p">(</span><span class="n">lc_df</span><span class="p">)</span><span class="w"> </span><span class="c1"># Note the overall cahnge</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   value  date1  date2   diff       name
+1      1  17800  18404    604      Water
+2      2 331053 365297  34244  Developed
+6      3   4540   6097   1557     Barren
+7      4  92154  78485 -13669     Forest
+10     5  16362  15996   -366  Shrubland
+11     7  21756  19372  -2384 Herbaceous
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">#### Now visualize the overall land cover changes</span><span class="w">
+</span><span class="n">barplot</span><span class="p">(</span><span class="n">lc_df</span><span class="o">$</span><span class="n">diff</span><span class="p">,</span><span class="n">names.arg</span><span class="o">=</span><span class="n">lc_df</span><span class="o">$</span><span class="n">name</span><span class="p">,</span><span class="n">las</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-25-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">total_val</span><span class="w">  </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span><span class="n">lc_df</span><span class="o">$</span><span class="n">date1</span><span class="p">)</span><span class="w">
+</span><span class="n">lc_df</span><span class="o">$</span><span class="n">perc_change</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">100</span><span class="o">*</span><span class="n">lc_df</span><span class="o">$</span><span class="n">diff</span><span class="o">/</span><span class="n">total_val</span><span class="w"> 
+</span><span class="n">barplot</span><span class="p">(</span><span class="n">lc_df</span><span class="o">$</span><span class="n">perc_change</span><span class="p">,</span><span class="n">names.arg</span><span class="o">=</span><span class="n">lc_df</span><span class="o">$</span><span class="n">name</span><span class="p">,</span><span class="n">las</span><span class="o">=</span><span class="m">2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-26-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Create a change image to map all pixels that transitioned to the developed category:  </span><span class="w">
+
+</span><span class="n">r_cat2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_date2_rec</span><span class="o">==</span><span class="m">2</span><span class="w"> </span><span class="c1"># developed on date 2</span><span class="w">
+</span><span class="n">r_not_cat2</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_date1_rec</span><span class="o">!=</span><span class="m">2</span><span class="w"> </span><span class="c1">#remove areas that were already developed in date1, we do not want persistence</span><span class="w">
+
+</span><span class="n">r_change</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_cat2</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r_not_cat2</span><span class="w"> </span><span class="c1">#mask</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_change</span><span class="p">,</span><span class="n">main</span><span class="o">=</span><span class="s2">"Land transitions to developed over 2001-2011"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-27-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">change_tb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">freq</span><span class="p">(</span><span class="n">r_change</span><span class="p">)</span><span class="w"> </span><span class="c1">#Find out how many pixels transitions to developed</span><span class="w">
+</span></code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">#####################################</span><span class="w">
+</span><span class="c1">############# PART III: Process and Prepare variables for land change modeling ##############</span><span class="w">
+
+</span><span class="c1">## y= 1 if change to urban over 2001-2011</span><span class="w">
+</span><span class="c1">### Explanatory variables:</span><span class="w">
+</span><span class="c1">#var1: distance to existing urban in 2001</span><span class="w">
+</span><span class="c1">#var2: distance to road in 2001</span><span class="w">
+</span><span class="c1">#var3: elevation, low slope better for new development</span><span class="w">
+</span><span class="c1">#var4: past land cover state that may influence future land change</span><span class="w">
+
+</span><span class="c1">## 1) Generate var1 and var2 : distance to developed and distance to roads</span><span class="w">
+
+</span><span class="c1">### Distance to existing in 2001: prepare information</span><span class="w">
+</span><span class="n">r_cat2</span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_date1_rec</span><span class="o">==</span><span class="m">2</span><span class="w"> </span><span class="c1">#developed in 2001</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_cat2</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-29-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">cat_bool_fname</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"developed_2001.tif"</span><span class="w"> </span><span class="c1">#input for the distance to road computation</span><span class="w">
+</span><span class="n">writeRaster</span><span class="p">(</span><span class="n">r_cat2</span><span class="p">,</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">cat_bool_fname</span><span class="p">,</span><span class="n">overwrite</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">### Read in data for road count</span><span class="w">
+</span><span class="n">r_roads</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">roads_fname</span><span class="p">))</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_roads</span><span class="p">,</span><span class="n">colNA</span><span class="o">=</span><span class="s2">"black"</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-30-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">res</span><span class="p">(</span><span class="n">r_roads</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 30 30
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">#### Aggregate to match the NLCD data resolution</span><span class="w">
+</span><span class="n">r_roads_90m</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">aggregate</span><span class="p">(</span><span class="n">r_roads</span><span class="p">,</span><span class="w">
+                         </span><span class="n">fact</span><span class="o">=</span><span class="m">3</span><span class="p">,</span><span class="w"> </span><span class="c1">#factor of aggregation in x and y</span><span class="w">
+                         </span><span class="n">fun</span><span class="o">=</span><span class="n">mean</span><span class="p">)</span><span class="w"> </span><span class="c1">#function used in aggregation values</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_roads_90m</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-32-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">r_roads_bool</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_roads_90m</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_roads_bool</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-33-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">roads_bool_fname</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"roads_bool.tif"</span><span class="w"> </span><span class="c1">#input for the distance to road computation</span><span class="w">
+</span><span class="n">writeRaster</span><span class="p">(</span><span class="n">r_roads_bool</span><span class="p">,</span><span class="n">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">roads_bool_fname</span><span class="p">,</span><span class="n">overwrite</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">### This part could be transformed into a function but we keep it for clarity and learning:</span><span class="w">
+</span><span class="k">if</span><span class="p">(</span><span class="n">gdal_installed</span><span class="o">==</span><span class="kc">TRUE</span><span class="p">){</span><span class="w">
+  
+  </span><span class="c1">## Distance from developed land in 2001</span><span class="w">
+  </span><span class="n">srcfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cat_bool_fname</span><span class="w">  
+  </span><span class="n">dstfile_developed</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file.path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span><span class="n">paste</span><span class="p">(</span><span class="s2">"developed_distance_"</span><span class="p">,</span><span class="n">out_suffix</span><span class="p">,</span><span class="n">file_format</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">))</span><span class="w">
+  </span><span class="n">n_values</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+  
+  </span><span class="c1">### Prepare GDAL command: note that gdal_proximity doesn't like when path is too long</span><span class="w">
+  </span><span class="n">cmd_developed_str</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"gdal_proximity.py"</span><span class="p">,</span><span class="w">
+                              </span><span class="n">basename</span><span class="p">(</span><span class="n">srcfile</span><span class="p">),</span><span class="w">
+                              </span><span class="n">basename</span><span class="p">(</span><span class="n">dstfile_developed</span><span class="p">),</span><span class="w">
+                              </span><span class="s2">"-values"</span><span class="p">,</span><span class="n">n_values</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+  </span><span class="c1">### Distance from roads</span><span class="w">
+  </span><span class="n">srcfile</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">roads_bool_fname</span><span class="w"> 
+  </span><span class="n">dstfile_roads</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">file.path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span><span class="n">paste</span><span class="p">(</span><span class="s2">"roads_bool_distance_"</span><span class="p">,</span><span class="n">out_suffix</span><span class="p">,</span><span class="n">file_format</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">))</span><span class="w">
+  </span><span class="n">n_values</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="s2">"1"</span><span class="w">
+  
+  </span><span class="c1">### Prepare GDAL command: note that gdal_proximity doesn't like when path is too long</span><span class="w">
+  </span><span class="n">cmd_roads_str</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">paste</span><span class="p">(</span><span class="s2">"gdal_proximity.py"</span><span class="p">,</span><span class="n">basename</span><span class="p">(</span><span class="n">srcfile</span><span class="p">),</span><span class="w">
+                         </span><span class="n">basename</span><span class="p">(</span><span class="n">dstfile_roads</span><span class="p">),</span><span class="w">
+                         </span><span class="s2">"-values"</span><span class="p">,</span><span class="n">n_values</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">" "</span><span class="p">)</span><span class="w">
+
+  </span><span class="n">sys_os</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.list</span><span class="p">(</span><span class="n">Sys.info</span><span class="p">())</span><span class="o">$</span><span class="n">sysname</span><span class="w"> </span><span class="c1">#Find what OS system is in use.</span><span class="w">
+  
+  </span><span class="k">if</span><span class="p">(</span><span class="n">sys_os</span><span class="o">==</span><span class="s2">"Windows"</span><span class="p">){</span><span class="w">
+    </span><span class="n">shell</span><span class="p">(</span><span class="n">cmd_developed_str</span><span class="p">)</span><span class="w">
+    </span><span class="n">shell</span><span class="p">(</span><span class="n">cmd_roads_str</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w">
+    </span><span class="n">system</span><span class="p">(</span><span class="n">cmd_developed_str</span><span class="p">)</span><span class="w">
+    </span><span class="n">system</span><span class="p">(</span><span class="n">cmd_roads_str</span><span class="p">)</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+  </span><span class="n">r_roads_distance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">dstfile_roads</span><span class="p">)</span><span class="w">
+  </span><span class="n">r_developed_distance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">dstfile_developed</span><span class="p">)</span><span class="w">
+  
+</span><span class="p">}</span><span class="k">else</span><span class="p">{</span><span class="w">
+  </span><span class="n">r_developed_distance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir</span><span class="p">,</span><span class="n">paste</span><span class="p">(</span><span class="s2">"developed_distance_"</span><span class="p">,</span><span class="n">file_format</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">)))</span><span class="w">
+  </span><span class="n">r_roads_distance</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">paste</span><span class="p">(</span><span class="s2">"roads_bool_distance"</span><span class="p">,</span><span class="n">file_format</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s2">""</span><span class="p">)))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_developed_distance</span><span class="p">)</span><span class="w"> </span><span class="c1">#This is at 90m.</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-34-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">r_roads_distance</span><span class="p">)</span><span class="w"> </span><span class="c1">#This is at 90m.</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-35-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">#Now rescale the distance...</span><span class="w">
+</span><span class="n">min_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cellStats</span><span class="p">(</span><span class="n">r_roads_distance</span><span class="p">,</span><span class="n">min</span><span class="p">)</span><span class="w"> 
+</span><span class="n">max_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cellStats</span><span class="p">(</span><span class="n">r_roads_distance</span><span class="p">,</span><span class="n">max</span><span class="p">)</span><span class="w">
+</span><span class="n">r_roads_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="p">(</span><span class="n">max_val</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">r_roads_distance</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">max_val</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min_val</span><span class="p">)</span><span class="w"> </span><span class="c1">#high values close to 1 for areas close to roads</span><span class="w">
+
+
+</span><span class="n">min_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cellStats</span><span class="p">(</span><span class="n">r_developed_distance</span><span class="p">,</span><span class="n">min</span><span class="p">)</span><span class="w"> 
+</span><span class="n">max_val</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">cellStats</span><span class="p">(</span><span class="n">r_developed_distance</span><span class="p">,</span><span class="n">max</span><span class="p">)</span><span class="w">
+</span><span class="n">r_developed_dist</span><span class="w"> </span><span class="o">&lt;-</span><span class="w">  </span><span class="p">(</span><span class="n">max_val</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">r_developed_distance</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="n">max_val</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">min_val</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## 2) Generate var3 : slope</span><span class="w">
+</span><span class="n">r_elevation</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">elevation_fname</span><span class="p">))</span><span class="w">
+
+</span><span class="n">projection</span><span class="p">(</span><span class="n">r_elevation</span><span class="p">)</span><span class="w"> </span><span class="c1"># This is not in the same projection as the study area. </span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] "+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">r_elevation_reg</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">projectRaster</span><span class="p">(</span><span class="n">from</span><span class="o">=</span><span class="w"> </span><span class="n">r_elevation</span><span class="p">,</span><span class="w"> </span><span class="c1">#input raster to reproject</span><span class="w">
+                                 </span><span class="n">to</span><span class="o">=</span><span class="w"> </span><span class="n">r_date1_rec</span><span class="p">,</span><span class="w"> </span><span class="c1">#raster with desired extent, resolution and projection system</span><span class="w">
+                                 </span><span class="n">method</span><span class="o">=</span><span class="w"> </span><span class="n">method_proj_val</span><span class="p">)</span><span class="w"> </span><span class="c1">#method used in the reprojection</span><span class="w">
+
+</span><span class="n">r_slope</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">terrain</span><span class="p">(</span><span class="n">r_elevation_reg</span><span class="p">,</span><span class="n">unit</span><span class="o">=</span><span class="s2">"degrees"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## 3) Generate var4 : past land cover state</span><span class="w">
+
+</span><span class="c1">### reclass Land cover</span><span class="w">
+</span><span class="n">r_mask</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_date1_rec</span><span class="o">==</span><span class="m">2</span><span class="w"> </span><span class="c1">#Remove developed land from  </span><span class="w">
+</span><span class="n">r_date1_rec_masked</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">r_date1_rec</span><span class="p">,</span><span class="n">r_mask</span><span class="p">,</span><span class="n">maskvalue</span><span class="o">=</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_date1_rec_masked</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-37-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">#####################################</span><span class="w">
+</span><span class="c1">############# PART IV: Run Model and perform assessment ##############</span><span class="w">
+
+</span><span class="c1">##############</span><span class="w">
+</span><span class="c1">###### Step 1: Consistent masking and generate mask removing water (1) and developed (2) in 2001</span><span class="w">
+
+</span><span class="c1">#r_mask &lt;- (r_date1_rec!=2)*(r_date1_rec!=1)*r_county_harris</span><span class="w">
+</span><span class="n">r_mask</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="p">(</span><span class="n">r_date1_rec</span><span class="o">!=</span><span class="m">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">r_date1_rec</span><span class="o">!=</span><span class="m">1</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_mask</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-38-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">NAvalue</span><span class="p">(</span><span class="n">r_mask</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="m">0</span><span class="w"> 
+
+</span><span class="c1">### Read in focus area for the modeling:</span><span class="w">
+</span><span class="n">r_county_harris</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">raster</span><span class="p">(</span><span class="n">file.path</span><span class="p">(</span><span class="n">in_dir_var</span><span class="p">,</span><span class="n">rastername_county_harris</span><span class="p">))</span><span class="w">
+</span><span class="c1">### Screen for area of interest</span><span class="w">
+</span><span class="n">r_mask</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_mask</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">r_county_harris</span><span class="w">
+</span><span class="n">r_mask</span><span class="p">[</span><span class="n">r_mask</span><span class="o">==</span><span class="m">0</span><span class="p">]</span><span class="o">&lt;-</span><span class="kc">NA</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_mask</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-39-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Check the number of NA and pixels in the study area:</span><span class="w">
+</span><span class="n">tb_study_area</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">freq</span><span class="p">(</span><span class="n">r_mask</span><span class="p">)</span><span class="w">
+</span><span class="n">print</span><span class="p">(</span><span class="n">tb_study_area</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     value  count
+[1,]     1 220338
+[2,]    NA 541047
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">## Generate dataset for Harris county</span><span class="w">
+</span><span class="n">r_variables</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">stack</span><span class="p">(</span><span class="n">r_change</span><span class="p">,</span><span class="n">r_date1_rec_masked</span><span class="p">,</span><span class="n">r_slope</span><span class="p">,</span><span class="n">r_roads_dist</span><span class="p">,</span><span class="n">r_developed_dist</span><span class="p">)</span><span class="w">
+</span><span class="n">r_variables</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">r_variables</span><span class="p">,</span><span class="n">mask</span><span class="o">=</span><span class="n">r_mask</span><span class="p">)</span><span class="w"> </span><span class="c1"># mask to keep relevant area</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">r_variables</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span><span class="s2">"land_cover"</span><span class="p">,</span><span class="s2">"slope"</span><span class="p">,</span><span class="s2">"roads_dist"</span><span class="p">,</span><span class="s2">"developed_dist"</span><span class="p">)</span><span class="w">
+</span><span class="n">NAvalue</span><span class="p">(</span><span class="n">r_variables</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">NA_flag_val</span><span class="w">
+
+</span><span class="c1">## Examine all the variables</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_variables</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-41-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">### Check for consistency in mask:</span><span class="w">
+</span><span class="n">NA_freq_tb</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">freq</span><span class="p">(</span><span class="n">r_variables</span><span class="p">,</span><span class="n">value</span><span class="o">=</span><span class="kc">NA</span><span class="p">,</span><span class="n">merge</span><span class="o">=</span><span class="nb">T</span><span class="p">)</span><span class="w">
+</span><span class="c1">### Notice that the number of NA is not consistent.</span><span class="w">
+</span><span class="c1">### Let's recombine all NA for consstencies:</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_variables</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-42-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">r_NA</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_variables</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">-1</span><span class="w"> </span><span class="c1">#There are no negative values in the raster stack</span><span class="w">
+
+</span><span class="n">r_valid_pixels</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">overlay</span><span class="p">(</span><span class="n">r_NA</span><span class="p">,</span><span class="n">fun</span><span class="o">=</span><span class="n">sum</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_valid_pixels</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-43-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="nf">dim</span><span class="p">(</span><span class="n">r_NA</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 789 965   5
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">freq</span><span class="p">(</span><span class="n">r_valid_pixels</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>     value  count
+[1,]     5 215437
+[2,]    NA 545948
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">r_mask</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">r_valid_pixels</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="m">0</span><span class="w">
+</span><span class="n">r_variables</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">mask</span><span class="p">(</span><span class="n">r_variables</span><span class="p">,</span><span class="n">r_mask</span><span class="p">)</span><span class="w">
+</span><span class="c1">#r_variables &lt;- freq(r_test2,value=NA,merge=T)</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">r_variables</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="s2">"change"</span><span class="p">,</span><span class="s2">"land_cover"</span><span class="p">,</span><span class="s2">"slope"</span><span class="p">,</span><span class="s2">"roads_dist"</span><span class="p">,</span><span class="s2">"developed_dist"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">###############</span><span class="w">
+</span><span class="c1">###### Step 2: Fit glm model and generate predictions</span><span class="w">
+
+</span><span class="n">variables_df</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">na.omit</span><span class="p">(</span><span class="n">as.data.frame</span><span class="p">(</span><span class="n">r_variables</span><span class="p">))</span><span class="w">
+</span><span class="nf">dim</span><span class="p">(</span><span class="n">variables_df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 215437      5
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">variables_df</span><span class="o">$</span><span class="n">land_cover</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">variables_df</span><span class="o">$</span><span class="n">land_cover</span><span class="p">)</span><span class="w">
+</span><span class="n">variables_df</span><span class="o">$</span><span class="n">change</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">as.factor</span><span class="p">(</span><span class="n">variables_df</span><span class="o">$</span><span class="n">change</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">#names(variables_df) &lt;- c("change","land_cover","elevation","roads_dist","developed_dist")</span><span class="w">
+</span><span class="nf">names</span><span class="p">(</span><span class="n">variables_df</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] "change"         "land_cover"     "slope"          "roads_dist"    
+[5] "developed_dist"
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">mod_glm</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">glm</span><span class="p">(</span><span class="n">change</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="n">land_cover</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">slope</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">roads_dist</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">developed_dist</span><span class="p">,</span><span class="w"> 
+           </span><span class="n">data</span><span class="o">=</span><span class="n">variables_df</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">family</span><span class="o">=</span><span class="n">binomial</span><span class="p">())</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+</code></pre></div></div>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">print</span><span class="p">(</span><span class="n">mod_glm</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Call:  glm(formula = change ~ land_cover + slope + roads_dist + developed_dist, 
+    family = binomial(), data = variables_df)
+
+Coefficients:
+   (Intercept)     land_cover4     land_cover5     land_cover7  
+     -308.5419         -0.9241         -1.2272         -0.7449  
+   land_cover8     land_cover9           slope      roads_dist  
+       -1.0081         -1.2218         -0.2112        298.0062  
+developed_dist  
+       11.1344  
+
+Degrees of Freedom: 215436 Total (i.e. Null);  215428 Residual
+Null Deviance:	    142300 
+Residual Deviance: 112900 	AIC: 112900
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">summary</span><span class="p">(</span><span class="n">mod_glm</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+Call:
+glm(formula = change ~ land_cover + slope + roads_dist + developed_dist, 
+    family = binomial(), data = variables_df)
+
+Deviance Residuals: 
+    Min       1Q   Median       3Q      Max  
+-1.3712  -0.5328  -0.2546  -0.0418   6.6490  
+
+Coefficients:
+                 Estimate Std. Error z value Pr(&gt;|z|)    
+(Intercept)    -308.54187    3.05822 -100.89   &lt;2e-16 ***
+land_cover4      -0.92415    0.04763  -19.40   &lt;2e-16 ***
+land_cover5      -1.22723    0.06081  -20.18   &lt;2e-16 ***
+land_cover7      -0.74491    0.05151  -14.46   &lt;2e-16 ***
+land_cover8      -1.00809    0.04851  -20.78   &lt;2e-16 ***
+land_cover9      -1.22180    0.05087  -24.02   &lt;2e-16 ***
+slope            -0.21119    0.01307  -16.16   &lt;2e-16 ***
+roads_dist      298.00624    3.07499   96.91   &lt;2e-16 ***
+developed_dist   11.13435    0.26236   42.44   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+(Dispersion parameter for binomial family taken to be 1)
+
+    Null deviance: 142342  on 215436  degrees of freedom
+Residual deviance: 112871  on 215428  degrees of freedom
+AIC: 112889
+
+Number of Fisher Scoring iterations: 8
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">r_p</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">predict</span><span class="p">(</span><span class="n">r_variables</span><span class="p">,</span><span class="w"> </span><span class="n">mod_glm</span><span class="p">,</span><span class="w"> </span><span class="n">type</span><span class="o">=</span><span class="s2">"response"</span><span class="p">)</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_p</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-50-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">histogram</span><span class="p">(</span><span class="n">r_p</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-51-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">###############</span><span class="w">
+</span><span class="c1">###### Step 3: Model assessment with ROC</span><span class="w">
+
+</span><span class="c1">## We use the TOC package since it allows for the use of raster layers.</span><span class="w">
+
+</span><span class="n">r_change_harris</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">subset</span><span class="p">(</span><span class="n">r_variables</span><span class="p">,</span><span class="s2">"change"</span><span class="p">)</span><span class="w">
+
+</span><span class="c1">## These are the inputs for the assessment</span><span class="w">
+</span><span class="n">plot</span><span class="p">(</span><span class="n">r_change_harris</span><span class="p">)</span><span class="w"> </span><span class="c1"># boolean reference variable</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-52-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">r_mask</span><span class="p">)</span><span class="w"> </span><span class="c1"># mask for relevant observation</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-53-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">plot</span><span class="p">(</span><span class="n">r_p</span><span class="p">)</span><span class="w"> </span><span class="c1"># index variable to assess</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-54-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">roc_rast</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">ROC</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">r_p</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">boolean</span><span class="o">=</span><span class="n">r_change_harris</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">mask</span><span class="o">=</span><span class="n">r_mask</span><span class="p">,</span><span class="w">
+                  </span><span class="n">nthres</span><span class="o">=</span><span class="m">100</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">roc_rast</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-55-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">slot</span><span class="p">(</span><span class="n">roc_rast</span><span class="p">,</span><span class="s2">"AUC"</span><span class="p">)</span><span class="w"> </span><span class="c1">#this is the AUC from ROC for the logistic modeling</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 0.836335
+</code></pre></div></div>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">toc_rast</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="n">TOC</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">r_p</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">boolean</span><span class="o">=</span><span class="n">r_change_harris</span><span class="p">,</span><span class="w"> 
+                  </span><span class="n">mask</span><span class="o">=</span><span class="n">r_mask</span><span class="p">,</span><span class="w">
+                  </span><span class="n">nthres</span><span class="o">=</span><span class="m">100</span><span class="p">)</span><span class="w">
+
+</span><span class="n">plot</span><span class="p">(</span><span class="n">toc_rast</span><span class="p">)</span><span class="w">
+</span></code></pre></div></div>
+<p class="captioned"><img src="https://cdn.jsdelivr.net/gh/sesync-ci/intro-land-change-modelling-lesson@v0.0/docs/images/complete/unnamed-chunk-57-1.png" alt=" " /></p>
+
+<p></p>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="n">slot</span><span class="p">(</span><span class="n">toc_rast</span><span class="p">,</span><span class="s2">"AUC"</span><span class="p">)</span><span class="w"> </span><span class="c1">#this is the AUC from TOC for the logistic modeling</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="output highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[1] 0.836335
+</code></pre></div></div>
+
+<div class="language-r text-document highlighter-rouge" title="worksheet-2.R"><div class="highlight"><pre class="highlight"><code><span class="c1">###############################  End of script  #####################################</span><span class="w">
+</span></code></pre></div></div>
+
+<p class="ToS"><a href="#/slides/complete">Top of Section</a></p>
+
+
+
+        <hr>
+
+<p>If you need to catch-up before a section of code will work, just squish it's
+🍅 to copy code above it into your clipboard. Then paste into your interpreter's
+console, run, and you'll be ready to start in on that section. Code copied by
+both 🍅 and 📋 will also appear below, where you can edit first, and then copy,
+paste, and run again.</p>
+
+<div class="output">
+  <pre id="ketchup" contenteditable="true"><code># Nothing here yet!</code></pre>
+</div>
+
+<script>
+$(document).ready(function(){
+  
+  // Add code help icons to code blocks
+  $('.input, .text-document').append('<ul class="code-help">');
+  $('.code-help')
+    .append('<li class="clipboard">📋</li>');
+  $('.text-document:not(.no-eval) .code-help')
+    .append('<li class="ketchup">🍅</li>');
+
+  // Bind copy actions to mouse clicks on icons
+  var $ketchup = $('#ketchup');
+  var rng = document.createRange();
+  var sel = window.getSelection();
+  $('.ketchup').click(function(){
+    var $prev = $(this)
+      .parents('.text-document')
+      .prevAll('.text-document:has(.ketchup)');
+    $ketchup.find('code').text($prev.find('pre').text());
+    rng.selectNodeContents($ketchup[0]);
+    sel.removeAllRanges();
+    sel.addRange(rng);
+    document.execCommand("copy");
+    sel.removeAllRanges();
+  });
+  $('.text-document .clipboard').click(function(){
+    var pre = $(this).parents('.text-document').find('pre').text();
+    $ketchup.find('code').text(pre);
+    rng.selectNodeContents($ketchup[0]);
+    sel.removeAllRanges();
+    sel.addRange(rng);
+    document.execCommand("copy");
+    sel.removeAllRanges();
+  });
+  $('.input .clipboard').click(function(){
+    var pre = $(this).parents('.input').find('pre').text();
+    pre = pre.replace(/(^|\n)> */g, '$1');
+    $ketchup.find('code').text(pre);
+    rng.selectNodeContents($ketchup[0]);
+    sel.removeAllRanges();
+    sel.addRange(rng);
+    document.execCommand("copy");
+    sel.removeAllRanges();
+  });
+});
+</script>
+      </div>
+    </div>
+    <script>
+$(document).ready(function(){
+  // Add links to R and Python package repositories
+  $('a.rlib').map(function(){
+    this.href = 'https://cran.r-project.org/package=' + this.innerText;
+  });
+  $('a.pylib').map(function(){
+    this.href = 'https://pypi.python.org/pypi/' + this.innerText;
+  });
+});
+</script>
+
+  </body>
+</html>
