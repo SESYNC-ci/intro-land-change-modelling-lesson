@@ -14,6 +14,9 @@ handouts:
 tag: v0.0
 lesson: 2
 instructor: Benoit Parmentier
+lifecycle: beta # status for lifecycle badge
+badgecolor: blue # color for lifecycle badge
+warning: true # whether to include note about lifecycle status
 authors: 
   - Benoit Parmentier
 sorter:
